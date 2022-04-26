@@ -4,28 +4,92 @@
 }
 
 body {
-    margin: 0;
-    display: grid;
-    grid-template-columns: repeat(2, 4rem);
-    grid-template-rows: 7rem 2rem 7rem;
-    gap: .5rem;
-    cursor: pointer;
+    /* margin: 0; */
+    /* display: grid; */
+    /* grid-template-columns: repeat(2, 6rem);
+    grid-template-rows: 10rem 2rem 10rem; */
+    /* gap: .5rem; */
+    /* cursor: pointer; */
     justify-content: center;
     padding-top: 1rem;
 }
 
-.deck {
+.bay {
+    height: 100%;
+    width: 25%;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    border-radius: .5rem;
+    color: Gray;
+    user-select: none;
+    float: inline-start;
+    margin-bottom: 2rem;
+}
+
+
+.row {
     height: 100%;
     width: 100%;
     border: 1px solid black;
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 3rem;
+    font-size: 2rem;
     border-radius: .5rem;
-    color: white;
+    color: Gray;
     user-select: none;
 }
+
+.stockPile {
+
+    height: 100%;
+    width: 25%;
+    border: 1px solid black;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    border-radius: .5rem;
+    color: Gray;
+    user-select: none;
+
+}
+
+#firstRow {
+    color: black;
+}
+
+#secondRow {
+    color: black;
+}
+
+#thirdRow {
+    color: black;
+}
+
+#fourthRow {
+    color: black;
+}
+
+#fifthRow {
+    color: black;
+}
+
+#sixthRow {
+    color: black;
+}
+
+#seventhRow {
+    color: black;
+}
+
+#stockPile {
+    color: black;
+}
+
 
 .computer-deck {
     background-color: green;
@@ -42,16 +106,16 @@ body {
     align-items: center;
 }
 
-.card.red {
+.red {
     color: red;
 }
 
-.card.black {
+.black {
     color: black;
 }
 
 
-.card {
+/* .card {
     position: relative;
     height: 100%;
     width: 100%;
@@ -79,4 +143,16 @@ body {
     bottom: .5rem;
     right: .5rem;
     transform: rotate(180deg);
+} */
+
+.cardValue::after {
+    
+    content: attr(data-value);
+    float: inline-start;
+    
+}
+
+li {
+    list-style-type: none;
+
 }

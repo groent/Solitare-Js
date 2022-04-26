@@ -41,9 +41,11 @@ class Card {
 
 
      getHTML() {
-        const cardDiv = document.createElement('div')
-        cardDiv.innerText = this.suit
-        cardDiv.classList.add("card", this.color)
+        const cardDiv = document.createElement('li')
+       // cardDiv.innerText = this.suit
+        //cardDiv.classList.add("card", this.color)
+        cardDiv.classList.add("cardValue", this.color)
+        cardDiv.draggable = true
         cardDiv.dataset.value = `${this.value} ${this.suit}`
         return cardDiv
     }
