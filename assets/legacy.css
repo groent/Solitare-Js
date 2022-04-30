@@ -156,3 +156,18 @@ li {
     list-style-type: none;
 
 }
+
+
+/* Drag and Drop Classes */
+
+.container {
+   color: gray;
+}
+
+.draggable {
+    cursor: move;
+}
+
+.draggable.dragging {
+    opacity: .5;
+}

@@ -107,3 +107,5 @@ dist
 
 .vscode/
 workspace.code-workspace
+
+scripts/Solitare-Js.code-workspace

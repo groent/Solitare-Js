@@ -1,4 +1,5 @@
 import Deck from './deck.js'
+let firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, cardNumber, cardNumber2, inRound, playingField, input, destination
 
 const CARD_VALUE_MAP = {
     "A": 1,
@@ -23,7 +24,7 @@ const playerDeckElement = document.querySelector('.player-deck')
 const text = document.querySelector('.text')
 
 // Row CSS Tags
-const firstRowContent = document.querySelector('#firstRow')
+const firstRowContent = document.querySelector('#firstRow') 
 const secondRowContent = document.querySelector('#secondRow')
 const thirdRowContent = document.querySelector('#thirdRow')
 const fourthRowContent = document.querySelector('#fourthRow')
@@ -32,7 +33,17 @@ const sixthRowContent = document.querySelector('#sixthRow')
 const seventhRowContent = document.querySelector('#seventhRow')
 const stockPileContent = document.querySelector('#stockPile')
 
-let firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, inRound, playingField, hidden
+const firstRowContentClass = document.querySelectorAll('.firstRow') 
+const secondRowContentClass = document.querySelectorAll('.secondRow')
+const thirdRowContentClass = document.querySelectorAll('.thirdRow')
+const fourthRowContentClass = document.querySelectorAll('.fourthRow')
+const fifthRowContentClass = document.querySelectorAll('.fifthRow')
+const sixthRowContentClass = document.querySelectorAll('.sixthRow')
+const seventhRowContentClass = document.querySelectorAll('.seventhRow')
+const stockPileContentClass = document.querySelectorAll('.stockPile')
+
+
+
 
 
 //Start Round and Listen to Click to Draw a card
@@ -60,14 +71,6 @@ console.log(deck.cards)
 
 // Get array positions for the cards in each stack
 
-// const deckFirst = Math.ceil(deck.numberOfCards - 51)
-// const deckSecond = Math.ceil(deck.numberOfCards - 49)
-// const deckThird = Math.ceil(deck.numberOfCards - 46)
-// const deckFourth = Math.ceil(deck.numberOfCards - 42)
-// const deckFifth =  Math.ceil(deck.numberOfCards - 37)
-// const deckSixth =  Math.ceil(deck.numberOfCards - 31)
-// const deckSeventh = Math.ceil(deck.numberOfCards - 24)
-
 const deckSlice = [1, 3, 6, 10, 15, 21, 28]
 
 //Create Stacks
@@ -82,7 +85,8 @@ seventhStack = new Deck (deck.cards.slice(deckSlice[5], deckSlice[6]))
 stockPile = new Deck (deck.cards.slice(deckSlice[6], deck.numberOfCards))
 inRound = false
 
-playingField = [firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack]
+var firstStackVisible = [firstStack]
+var secondStackVisible = [secondStack[0]]
 
 //Log Stacks for Debugging Purposes
 console.log(firstStack)
@@ -94,69 +98,54 @@ console.log(sixthStack)
 console.log(seventhStack)
 console.log(stockPile)
 
+
+
+
 renderStacks()
 
 
 }
 
 
+
+
+function getCardDataAttr (inputElement) {
+    let value = inputElement.getAttribute('data-value')
+    console.log(value)
+    return value
+}
+
+
+function getCardValues (inputValue) {
+
+
+
+}
+// J ♣
+function test () {
+    let cards = document.getElementsByClassName("cardValue").item(0)
+    getCardDataAttr(cards)
+}
+
+test()
 //"Render"Values, (Place holder to test game mecanics, it will most likely be phased out once the transition to pixi is made)
 
-// function renderStacks () {
-//     // firstRowContent.appendChild(firstStack.cards[0].getHTML());
-
-//     // //Second Row
-//     // secondRowContent.appendChild(secondStack.cards[0].getHTML());
-//     // secondRowContent.appendChild(secondStack.cards[1].getHTML());
-//     // //Third Row
-//     // thirdRowContent.appendChild(thirdStack.cards[0].getHTML());
-//     // thirdRowContent.appendChild(thirdStack.cards[1].getHTML());
-//     // thirdRowContent.appendChild(thirdStack.cards[2].getHTML());
-//     // //Fourth
-//     // fourthRowContent.appendChild(fourthStack.cards[0].getHTML());
-//     // fourthRowContent.appendChild(fourthStack.cards[1].getHTML());
-//     // fourthRowContent.appendChild(fourthStack.cards[2].getHTML());
-//     // fourthRowContent.appendChild(fourthStack.cards[3].getHTML());
-//     // //Fifth
-//     // fifthRowContent.appendChild(fifthStack.cards[0].getHTML());
-//     // fifthRowContent.appendChild(fifthStack.cards[1].getHTML());
-//     // fifthRowContent.appendChild(fifthStack.cards[2].getHTML());
-//     // fifthRowContent.appendChild(fifthStack.cards[3].getHTML());
-//     // fifthRowContent.appendChild(fifthStack.cards[4].getHTML());
-//     // //Sixth
-//     // sixthRowContent.appendChild(sixthStack.cards[0].getHTML());
-//     // sixthRowContent.appendChild(sixthStack.cards[1].getHTML());
-//     // sixthRowContent.appendChild(sixthStack.cards[2].getHTML());
-//     // sixthRowContent.appendChild(sixthStack.cards[3].getHTML());
-//     // sixthRowContent.appendChild(sixthStack.cards[4].getHTML());
-//     // sixthRowContent.appendChild(sixthStack.cards[5].getHTML());
-//     // //Seventh
-//     // seventhRowContent.appendChild(seventhStack.cards[0].getHTML());
-//     // seventhRowContent.appendChild(seventhStack.cards[1].getHTML());
-//     // seventhRowContent.appendChild(seventhStack.cards[2].getHTML()); 
-//     // seventhRowContent.appendChild(seventhStack.cards[3].getHTML());
-//     // seventhRowContent.appendChild(seventhStack.cards[4].getHTML());
-//     // seventhRowContent.appendChild(seventhStack.cards[5].getHTML());
-//     // seventhRowContent.appendChild(seventhStack.cards[6].getHTML());
-
-//     // firstRowContent.appendChild(firstStack.cards[0].getHTML());
-//     // console.log(firstStack.cards)
+ console.log(firstStack.cards)
    
-
-//    
-   
-
-
-// }
-
 function renderStacks() {
+
+    //Load Decks and Stacks
+   
     
+
     for (let i = 0; i < firstStack.cards.length; i++) {
-        firstRowContent.appendChild(firstStack.cards[0].getHTML());
+        // Create Array of visible and hidden cards
+             firstRowContent.appendChild(firstStack.cards[i].getHTML());
     }
     
     for (let i = 0; i < secondStack.cards.length; i++) {
-        secondRowContent.appendChild(secondStack.cards[i].getHTML());
+         secondRowContent.appendChild(secondStack.cards[i].getHTML());
+        
     }
     
     for (let i = 0; i < thirdStack.cards.length; i++) {
@@ -182,13 +171,130 @@ function renderStacks() {
     for (let i = 0; i < stockPile.cards.length; i++) {
         stockPileContent.appendChild(stockPile.cards[i].getHTML());
     }
+
+    //Always have first element of Stack be exposed
+
+    let firstStackCard = firstStack.cards[0];
+    let secondStackCard = secondStack.cards[0];
+    let thirdStackCard =  thirdStack.cards[0];
+    let fourthStackCard = fourthStack.cards[0];
+    let fifthStackCard = fifthStack.cards[0];
+    let sixthStackCard = sixthStack.cards[0];
+    let seventhStackCard = seventhStack.cards[0];
+    let stockPileStackCard = stockPile.cards[0];
+
 }
 
-//For every array element render a Value
-// Input, rowContent, Stack
+// Test by moving a Card from the First to second Stack
+
+function moveCard(inputStack, destinationStack) {
+     
+let moved = inputStack.cards[0]
+
+
+destinationStack.push(moved)
+
+console.log(destinationStack)
+
+moveCardAfter()
+
+inputStack.pop()
+
+clearStacks()
+
+renderStacks()
+
+}
+
+function moveCardAfter(destinationStack, moved) {
+   
+}
+
+
+const draggables = document.querySelectorAll('.draggable')
+const containers = document.querySelectorAll('.container')
 
 
 
+
+
+
+
+firstRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("First Row CLicked")
+         input = firstStack
+         destination = secondStack
+         
+        
+})
+})
+
+secondRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Second Row CLicked")
+        
+})
+})
+thirdRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Third Row CLicked")
+})
+})
+fourthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Fourth Row CLicked")
+})
+})
+fifthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Fifth Row CLicked")
+})
+})
+sixthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Sixth Row CLicked")
+})
+})
+seventhRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Seventh Row CLicked")
+})
+})
+stockPileContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Stockpile CLicked")
+})
+})
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+//Clear cards (For use to update visuals)
+
+function clearStacks() {
+
+        firstRowContent.innerHTML = ''
+        secondRowContent.innerHTML = ''
+        thirdRowContent.innerHTML = ''
+        fourthRowContent.innerHTML = ''
+        fifthRowContent.innerHTML = ''
+        sixthRowContent.innerHTML = ''
+        seventhRowContent.innerHTML = ''
+        stockPileContent.innerHTML = ''
+
+}
 
 
 // Game itself
@@ -266,3 +372,6 @@ function renderStacks() {
 // function isGameOver (deck) {
 //     return deck.numberOfCards === 0
 // }
+
+
+

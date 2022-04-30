@@ -1,9 +1,10 @@
 const SUITS = ["♠","♣","♥","♦"]
 const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
-  
+var hidden;
 export default class Deck {
     constructor(cards = freshDeck()) {
         this.cards = cards
+        
     }
 
     get numberOfCards () {
@@ -33,6 +34,8 @@ class Card {
     constructor(suit, value){
         this.suit = suit
         this.value = value
+        this.closed = true;
+        this.draggingJS = false;
     }
 
     get color() {
@@ -42,12 +45,26 @@ class Card {
 
      getHTML() {
         const cardDiv = document.createElement('li')
-       // cardDiv.innerText = this.suit
+        //cardDiv.innerText = this.suit
         //cardDiv.classList.add("card", this.color)
-        cardDiv.classList.add("cardValue", this.color)
+        //  if (closed = true) {
+        // cardDiv.classList.add("cardValue")
+        //  cardDiv.draggable = false
+        //  cardDiv.dataset.value = `X`
+        //  return cardDiv
+        //  } else if (hidden = false) {
+        /////cardDiv.innerText = this.suit
+        cardDiv.classList.add("card", this.color)
+        cardDiv.classList.add("cardValue", "draggable", this.color)
         cardDiv.draggable = true
+        
         cardDiv.dataset.value = `${this.value} ${this.suit}`
+        
         return cardDiv
+       
+        // }
+
+        
     }
 
     
