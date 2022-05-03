@@ -176,3 +176,8 @@ li {
 .selected::before {
     background-color: yellow;
 }
+
+.unselectable {
+    user-select: none;
+    cursor: not-allowed;
+}

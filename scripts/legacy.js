@@ -38,8 +38,8 @@ const sixthRowContentClass = document.querySelectorAll('.sixthRow');
 const seventhRowContentClass = document.querySelectorAll('.seventhRow');
 const stockPileContentClass = document.querySelectorAll('.stockPile');
 //var Cards = document.querySelectorAll('.card');
-
-
+var selectedCard = document.querySelectorAll('.selected');
+var selectedCardNodeList = []
 
 
 
@@ -120,7 +120,10 @@ function renderStacks() {
     for (let i = 0; i < firstStack.cards.length; i++) {
         // Create Array of visible and hidden cards
              firstRowContent.appendChild(firstStack.cards[i].getHTML());
+             
+             
     }
+    
     
     for (let i = 0; i < secondStack.cards.length; i++) {
          secondRowContent.appendChild(secondStack.cards[i].getHTML());
@@ -168,6 +171,12 @@ function renderStacks() {
 
 function moveCard(inputStack, destinationStack) {
      
+    
+     window[inputStack]
+     window[destinationStack]
+
+     console.log(inputStack)
+     console.log(destinationStack)
 let moved = inputStack.cards[0]
 
 
@@ -190,6 +199,7 @@ function moveCardAfter(destinationStack, moved) {
 }
 
 
+
 const Cards = document.querySelectorAll('.cardValue')
 const containers = document.querySelectorAll('.container')
 
@@ -200,68 +210,181 @@ const containers = document.querySelectorAll('.container')
 // CLICK EVENTS //
 /////////////////
 
-// firstRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("First Row CLicked")
-        
-         
-        
-//     });
-// });
-
-// secondRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Second Row CLicked")
-        
-// })
-// })
-// thirdRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Third Row CLicked")
-// })
-// })
-// fourthRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Fourth Row CLicked")
-// })
-// })
-// fifthRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Fifth Row CLicked")
-// })
-// })
-// sixthRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Sixth Row CLicked")
-// })
-// })
-// seventhRowContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Seventh Row CLicked")
-// })
-// })
-// stockPileContentClass.forEach(rowContent => {
-//     rowContent.addEventListener('click', () => {
-//         console.log("Stockpile CLicked")
-// })
-// })
-
-Cards.forEach(cardDiv => {
-    cardDiv.addEventListener('click', () => {
-        console.log("Card CLicked");
-        cardDiv.classList.add('selected')
-         
-        
+firstRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("First Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('firstStack') 
+       
+      checkSelected();
     });
 });
 
+secondRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Second Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('secondStack') 
+        checkSelected();
+})
+})
+thirdRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Third Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('thirdStack') 
+        checkSelected();
+})
+})
+fourthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Fourth Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('fourthStack') 
+        checkSelected();
+})
+})
+fifthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Fifth Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('fifthStack') 
+        checkSelected();
+})
+})
+sixthRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Sixth Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('sixthStack') 
+        checkSelected();
+})
+})
+seventhRowContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Seventh Row CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('seventhStack') 
+        checkSelected();
+})
+})
+stockPileContentClass.forEach(rowContent => {
+    rowContent.addEventListener('click', () => {
+        console.log("Stockpile CLicked")
+        rowContent.classList.add('selected')  
+        rowContent.classList.add('stockPile') 
+        checkSelected();
+})
+})
+
+
+
+
+
+// Cards.forEach(cardDiv => {
+//          cardDiv.addEventListener('click', () => {
+//         console.log("Card CLicked");
+//         cardDiv.classList.add('selected')   
+//         styleCard()
+//         checkSelected()
+//     });
+// });
+
+// function styleCard () {
+//     let victim = document.querySelectorAll('.selected');   
+//     for (let i = 0; i < victim.length; i++) {
+//         checkSelected()
+//         victim[i].innerHTML = "(selected)";
+//         console.log("Got Victim")
+        
+//     }
     
+   
+// }
+var selected = [];
+
+ function checkSelected() {
+     var selectedCardNodeList = document.querySelectorAll('.selected'); 
+     console.log(selectedCardNodeList)
+    if (selectedCardNodeList.length === 2) {
+        for (let i = 0; i < selectedCardNodeList.length; i++) {
+           
+            selectedCardNodeList[i].classList.remove('.selected')
+            
+             console.log('removed')
+
+              let classes  = selectedCardNodeList[i].classList.toString()
+                let classArr = classes.split(" ");
+                console.log(classArr)
+                selected[i] = classArr[2]
+                console.log(selected)   
+                console.log(selected[0], selected[1])     
+                checkToMove();
+        }
+        
+        
+        
+     } 
 
 
+ }
 
 
+function checkToMove () {
+    if (selected.length === 2) {
+        let card1 = selected[0]
+
+        if (card1 === "firstStack") {
+            card1 = firstStack
+        } else if (card1 === "secondStack") {
+            card1 = secondStack
+        }   else if (card1 === "thirdStack") {
+            card1 = thirdStack
+        }   else if (card1 === "fourthStack") {
+            card1 = fourthStack
+        }else if (card1 === "fifthStack") {
+            card1 = fifthStack
+        }else if (card1 === "sixthStack") {
+            card1 = sixthStack
+        }else if (card1 === "seventhStack") {
+            card1 = seventhStack
+        } else {
+            card1 = stockPile
+        }
+
+            let card2 = selected[1]
+
+            if (card2 === "firstStack") {
+                card2 = firstStack
+            } else if (card2 === "secondStack") {
+                card2 = secondStack
+            }   else if (card2 === "thirdStack") {
+                card2 = thirdStack
+            }   else if (card2 === "fourthStack") {
+                card2 = fourthStack
+            }else if (card2 === "fifthStack") {
+                card2 = fifthStack
+            }else if (car21 === "sixthStack") {
+                card2 = sixthStack
+            }else if (card2 === "seventhStack") {
+                card2 = seventhStack
+            } else {
+                card2 = stockPile
+            }
+
+        // let input1 = window[card1]
+        // let input2 = window[card2]
+
+        // console.log(input1)
+        // console.log(input2)
+
+        moveCard(card1, card2)
+            selected = []
+
+    }
 
 
+}
 
 
 

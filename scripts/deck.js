@@ -45,18 +45,11 @@ class Card {
 
      getHTML() {
         const cardDiv = document.createElement('div')
-        //cardDiv.innerText = this.suit
-        //cardDiv.classList.add("card", this.color)
-        //  if (closed = true) {
-        // cardDiv.classList.add("cardValue")
-        //  cardDiv.draggable = false
-        //  cardDiv.dataset.value = `X`
-        //  return cardDiv
-        //  } else if (hidden = false) {
-        /////cardDiv.innerText = this.suit
         cardDiv.classList.add("card", this.color)
         cardDiv.classList.add("cardValue", "draggable", this.color)
+        //cardDiv.classList.add("unselectable")
         cardDiv.draggable = true
+        
         
         cardDiv.dataset.value = `${this.value} ${this.suit}`
         
