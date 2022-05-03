@@ -171,3 +171,8 @@ li {
 .draggable.dragging {
     opacity: .5;
 }
+
+.selected::after
+.selected::before {
+    background-color: yellow;
+}

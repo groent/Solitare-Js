@@ -1,5 +1,6 @@
+
 import Deck from './deck.js'
-let firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, cardNumber, cardNumber2, inRound, playingField, input, destination
+let firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, selectedCards
 
 const CARD_VALUE_MAP = {
     "A": 1,
@@ -17,48 +18,28 @@ const CARD_VALUE_MAP = {
     "K": 13,
 }
 
-const computerCardSlot = document.querySelector('.computer-card-slot')
-const playerCardSlot = document.querySelector('.player-card-slot')
-const computerDeckElement = document.querySelector('.computer-deck')
-const playerDeckElement = document.querySelector('.player-deck')
-const text = document.querySelector('.text')
 
 // Row CSS Tags
-const firstRowContent = document.querySelector('#firstRow') 
-const secondRowContent = document.querySelector('#secondRow')
-const thirdRowContent = document.querySelector('#thirdRow')
-const fourthRowContent = document.querySelector('#fourthRow')
-const fifthRowContent = document.querySelector('#fifthRow')
-const sixthRowContent = document.querySelector('#sixthRow')
-const seventhRowContent = document.querySelector('#seventhRow')
-const stockPileContent = document.querySelector('#stockPile')
+const firstRowContent = document.querySelector('#firstRow');
+const secondRowContent = document.querySelector('#secondRow');
+const thirdRowContent = document.querySelector('#thirdRow');
+const fourthRowContent = document.querySelector('#fourthRow');
+const fifthRowContent = document.querySelector('#fifthRow');
+const sixthRowContent = document.querySelector('#sixthRow');
+const seventhRowContent = document.querySelector('#seventhRow');
+const stockPileContent = document.querySelector('#stockPile');
 
-const firstRowContentClass = document.querySelectorAll('.firstRow') 
-const secondRowContentClass = document.querySelectorAll('.secondRow')
-const thirdRowContentClass = document.querySelectorAll('.thirdRow')
-const fourthRowContentClass = document.querySelectorAll('.fourthRow')
-const fifthRowContentClass = document.querySelectorAll('.fifthRow')
-const sixthRowContentClass = document.querySelectorAll('.sixthRow')
-const seventhRowContentClass = document.querySelectorAll('.seventhRow')
-const stockPileContentClass = document.querySelectorAll('.stockPile')
-
-
-
+const firstRowContentClass = document.querySelectorAll('.firstRow');
+const secondRowContentClass = document.querySelectorAll('.secondRow');
+const thirdRowContentClass = document.querySelectorAll('.thirdRow');
+const fourthRowContentClass = document.querySelectorAll('.fourthRow');
+const fifthRowContentClass = document.querySelectorAll('.fifthRow');
+const sixthRowContentClass = document.querySelectorAll('.sixthRow');
+const seventhRowContentClass = document.querySelectorAll('.seventhRow');
+const stockPileContentClass = document.querySelectorAll('.stockPile');
+//var Cards = document.querySelectorAll('.card');
 
 
-//Start Round and Listen to Click to Draw a card
-//
-// document.addEventListener('click', () => {
-//     if (stop) {
-//         startGame()
-//         return
-//     }
-//     if (inRound) {
-//         cleanBeforeRound()
-//     } else {
-//         flipCards()
-//     }
-// })
 
 
 
@@ -83,10 +64,8 @@ fifthStack = new Deck (deck.cards.slice(deckSlice[3], deckSlice[4]))
 sixthStack = new Deck (deck.cards.slice(deckSlice[4], deckSlice[5]))
 seventhStack = new Deck (deck.cards.slice(deckSlice[5], deckSlice[6]))
 stockPile = new Deck (deck.cards.slice(deckSlice[6], deck.numberOfCards))
-inRound = false
 
-var firstStackVisible = [firstStack]
-var secondStackVisible = [secondStack[0]]
+
 
 //Log Stacks for Debugging Purposes
 console.log(firstStack)
@@ -211,63 +190,70 @@ function moveCardAfter(destinationStack, moved) {
 }
 
 
-const draggables = document.querySelectorAll('.draggable')
+const Cards = document.querySelectorAll('.cardValue')
 const containers = document.querySelectorAll('.container')
 
 
 
 
+///////////////////
+// CLICK EVENTS //
+/////////////////
 
-
-
-firstRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("First Row CLicked")
-         input = firstStack
-         destination = secondStack
+// firstRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("First Row CLicked")
+        
          
         
-})
-})
+//     });
+// });
 
-secondRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Second Row CLicked")
+// secondRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Second Row CLicked")
         
-})
-})
-thirdRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Third Row CLicked")
-})
-})
-fourthRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Fourth Row CLicked")
-})
-})
-fifthRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Fifth Row CLicked")
-})
-})
-sixthRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Sixth Row CLicked")
-})
-})
-seventhRowContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Seventh Row CLicked")
-})
-})
-stockPileContentClass.forEach(rowContent => {
-    rowContent.addEventListener('click', () => {
-        console.log("Stockpile CLicked")
-})
-})
+// })
+// })
+// thirdRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Third Row CLicked")
+// })
+// })
+// fourthRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Fourth Row CLicked")
+// })
+// })
+// fifthRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Fifth Row CLicked")
+// })
+// })
+// sixthRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Sixth Row CLicked")
+// })
+// })
+// seventhRowContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Seventh Row CLicked")
+// })
+// })
+// stockPileContentClass.forEach(rowContent => {
+//     rowContent.addEventListener('click', () => {
+//         console.log("Stockpile CLicked")
+// })
+// })
 
-
+Cards.forEach(cardDiv => {
+    cardDiv.addEventListener('click', () => {
+        console.log("Card CLicked");
+        cardDiv.classList.add('selected')
+         
+        
+    });
+});
 
     
 

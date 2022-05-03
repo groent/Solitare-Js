@@ -44,7 +44,7 @@ class Card {
 
 
      getHTML() {
-        const cardDiv = document.createElement('li')
+        const cardDiv = document.createElement('div')
         //cardDiv.innerText = this.suit
         //cardDiv.classList.add("card", this.color)
         //  if (closed = true) {
