@@ -1,6 +1,6 @@
 
 import Deck from './deck.js'
-let firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, selectedCards
+var firstStack, secondStack, thirdStack, fourthStack, fifthStack, sixthStack, seventhStack, stockPile, selectedCards
 
 const CARD_VALUE_MAP = {
     "A": 1,
@@ -37,6 +37,17 @@ const fifthRowContentClass = document.querySelectorAll('.fifthRow');
 const sixthRowContentClass = document.querySelectorAll('.sixthRow');
 const seventhRowContentClass = document.querySelectorAll('.seventhRow');
 const stockPileContentClass = document.querySelectorAll('.stockPile');
+
+const firstStackClass = document.querySelectorAll('.firstStack');
+const secondStackClass = document.querySelectorAll('.secondStack');
+const thirdStackClass = document.querySelectorAll('.thirdStack');
+const fourthStackClass = document.querySelectorAll('.fourthStack');
+const fifthStackClass = document.querySelectorAll('.fifthStack');
+const sixthStackClass = document.querySelectorAll('.sixthStack');
+const seventhStackClass = document.querySelectorAll('.seventhStack');
+const stockPStackClass = document.querySelectorAll('.stockPile');
+const rows = document.querySelectorAll('.row')
+
 //var Cards = document.querySelectorAll('.card');
 var selectedCard = document.querySelectorAll('.selected');
 var selectedCardNodeList = []
@@ -172,11 +183,7 @@ function renderStacks() {
 function moveCard(inputStack, destinationStack) {
      
     
-     window[inputStack]
-     window[destinationStack]
-
-     console.log(inputStack)
-     console.log(destinationStack)
+     
 let moved = inputStack.cards[0]
 
 
@@ -191,6 +198,22 @@ inputStack.pop()
 clearStacks()
 
 renderStacks()
+
+for (let i = 0; i < rows.length; i++) {
+
+    rows[i].classList.remove('selected')
+    rows[i].classList.remove('firstStack')
+    rows[i].classList.remove('secondStack')
+    rows[i].classList.remove('thirdStack')
+    rows[i].classList.remove('fourthStack')
+    rows[i].classList.remove('fifthStack')
+    rows[i].classList.remove('sixthStack')
+    rows[i].classList.remove('seventhStack')
+    rows[i].classList.remove('stockPile')
+
+
+}
+
 
 }
 
@@ -217,6 +240,7 @@ firstRowContentClass.forEach(rowContent => {
         rowContent.classList.add('firstStack') 
        
       checkSelected();
+     
     });
 });
 
@@ -226,6 +250,8 @@ secondRowContentClass.forEach(rowContent => {
         rowContent.classList.add('selected')  
         rowContent.classList.add('secondStack') 
         checkSelected();
+      
+
 })
 })
 thirdRowContentClass.forEach(rowContent => {
@@ -309,17 +335,19 @@ var selected = [];
     if (selectedCardNodeList.length === 2) {
         for (let i = 0; i < selectedCardNodeList.length; i++) {
            
-            selectedCardNodeList[i].classList.remove('.selected')
+           
             
              console.log('removed')
 
               let classes  = selectedCardNodeList[i].classList.toString()
                 let classArr = classes.split(" ");
                 console.log(classArr)
-                selected[i] = classArr[2]
+                selected[i] = classArr.slice(-1).pop()
                 console.log(selected)   
                 console.log(selected[0], selected[1])     
                 checkToMove();
+                selectedCardNodeList[i].classList.remove('selected')
+              
         }
         
         
@@ -348,9 +376,9 @@ function checkToMove () {
             card1 = sixthStack
         }else if (card1 === "seventhStack") {
             card1 = seventhStack
-        } else {
+        } else if (card1 === "stockPile") {
             card1 = stockPile
-        }
+        } else {console.log("error")}
 
             let card2 = selected[1]
 
@@ -364,13 +392,13 @@ function checkToMove () {
                 card2 = fourthStack
             }else if (card2 === "fifthStack") {
                 card2 = fifthStack
-            }else if (car21 === "sixthStack") {
+            }else if (card2 === "sixthStack") {
                 card2 = sixthStack
             }else if (card2 === "seventhStack") {
                 card2 = seventhStack
-            } else {
+            } else if (card2 === stockPile) {
                 card2 = stockPile
-            }
+            }   else {console.log("error")}
 
         // let input1 = window[card1]
         // let input2 = window[card2]
@@ -379,8 +407,6 @@ function checkToMove () {
         // console.log(input2)
 
         moveCard(card1, card2)
-            selected = []
-
     }
 
 

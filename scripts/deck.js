@@ -35,7 +35,7 @@ class Card {
         this.suit = suit
         this.value = value
         this.closed = true;
-        this.draggingJS = false;
+  
     }
 
     get color() {
