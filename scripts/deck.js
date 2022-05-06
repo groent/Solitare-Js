@@ -43,7 +43,7 @@ class Card {
     }
 
 
-     getHTML() {
+     createCardDiv() {
         const cardDiv = document.createElement('div')
         cardDiv.classList.add("card", this.color)
         cardDiv.classList.add("cardValue", "draggable", this.color)

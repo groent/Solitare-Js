@@ -172,9 +172,9 @@ li {
     opacity: .5;
 }
 
-.selected::after
-.selected::before {
+.selected {
     background-color: yellow;
+    border: 2px solid black;
 }
 
 .unselectable {
