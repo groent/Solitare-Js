@@ -1,5 +1,6 @@
 const SUITS = ["♠","♣","♥","♦"]
 const VALUES = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"]
+const CONTEXT = ["stockPile", "openPile", "bay", "stack1", "stack2", "stack3", "stack4", "stack5", "stack6", "stack7"]
 var hidden;
 export default class Deck {
     constructor(cards = freshDeck()) {
@@ -31,11 +32,12 @@ export default class Deck {
 }
 
 class Card {
-    constructor(suit, value){
-        this.suit = suit
-        this.value = value
+    constructor(suit, value, context){
+        this.suit = suit;
+        this.value = value;
         this.closed = true;
-  
+        this.container = context;
+        this.selected = false
     }
 
     get color() {
@@ -46,11 +48,9 @@ class Card {
      createCardDiv() {
         const cardDiv = document.createElement('div')
         cardDiv.classList.add("card", this.color)
-        cardDiv.classList.add("cardValue", "draggable", this.color)
+        // cardDiv.classList.add("cardValue", "draggable", this.color)
         //cardDiv.classList.add("unselectable")
         cardDiv.draggable = true
-        
-        
         cardDiv.dataset.value = `${this.value} ${this.suit}`
         
         return cardDiv
@@ -66,7 +66,7 @@ class Card {
 function freshDeck () {
     return SUITS.flatMap(suit => {
         return VALUES.map( value => {
-            return new Card(suit, value)
+            return new Card(suit, value, "stockPile")
         })
     })
 
