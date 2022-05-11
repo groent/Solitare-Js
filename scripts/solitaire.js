@@ -2,6 +2,11 @@
 import Deck from './deck.js'
 const stockPile = new Deck();
 const openPile = new Object();
+const stack = [];
+for (let i=1; i<8; i++) {
+    stack[i] = new Object();
+    stack[i].cards = [];
+}
 const stacks = new Object();
 openPile.cards  = [];
 stacks.cards = [];
@@ -10,7 +15,6 @@ stacks.cards = [];
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const rowDivs = document.querySelectorAll(".row");
-
 const CARD_VALUE_MAP = {
     "A": 1,
     "2": 2,
@@ -24,7 +28,7 @@ const CARD_VALUE_MAP = {
     "10": 10,
     "J": 11,
     "Q": 12,
-    "K": 13,
+    "K": 13
 }
 
 
@@ -35,60 +39,71 @@ startGame();
 //Functions
 
 function startGame() {
-    renderStacks();
-    renderStockPile();
-    sliceDeck();
+    //renderStacks();
+    shuffleAndSliceDeck();
+    // sliceStacks();
 } 
 
-function renderStockPile() {
+
+
+function shuffleAndSliceDeck() {
     stockPile.shuffle();
+    for(let i=1; i<8; i++){
+       for( let j=0; j<i; j++){
+           stack[i].cards.push(stockPile.pop());
+           stack[i].cards[j].container=`stack${i}`;
+        } 
+    }
+    // for(let i=0; i<=27; i++) {
+    //     stacks.cards.push(stockPile.pop())
+        
+    // }
+  //  console.log(stacks.cards)
+    for(let i=1; i<8; i++){
+        console.log(stack[i].cards)
+    }
     console.log(stockPile.cards);
 
-    const deckSlice = [1, 3, 6, 10, 15, 21, 28]
-
-
 }
 
-function renderStacks() {
-
-    for(let i=0; i<=27; i++) {
-        stacks.cards.push(stockPile.pop())
-        
-    }
-    console.log(stacks.cards)
-}
-
-function sliceDeck() {
+function sliceStacks() {
     stacks.cards[0].container="stack1";
     //for Loops.
     for (let i=1; i<= 2; i++){
         stacks.cards[i].container="stack2";
     }
-    for (let i=2; i<= 5; i++){
+    for (let i=3; i<= 5; i++){
         stacks.cards[i].container="stack3";
     }
-    for (let i=5; i<= 9; i++){
+    for (let i=6; i<= 9; i++){
         stacks.cards[i].container="stack4";
     }
-    for (let i=9; i<= 14; i++){
+    for (let i=10; i<= 14; i++){
         stacks.cards[i].container="stack5";
     }
-    for (let i=14; i<= 20; i++){
+    for (let i=15; i<= 20; i++){
         stacks.cards[i].container="stack6";
     }
-    for (let i=20; i<= 27; i++){
+    for (let i=21; i<= 27; i++){
         stacks.cards[i].container="stack7";
     }
+    
+}
+
+function appendDivs() {
     
 }
 ////////////////////////
 ////Event Listeners////
 //////////////////////
 
+//For Stock Pile add turn card event
 stockPileDiv.addEventListener('click', () => {
-    console.log("Stock Pile CLicked: " + stockPile.cards.length);
+    //console.log("Stock Pile CLicked: " + stockPile.cards.length);
     stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
     openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
+    //If no card left turn the open pile back to stock pile.
+    //In reverse order
     if (stockPile.cards.length == 0) {
 
         // copy openPile into stockPile
@@ -107,21 +122,21 @@ stockPileDiv.addEventListener('click', () => {
 
          openPile.cards[0].container = "openPile"
          openPile.cards[0].closed = false
-         console.log(openPile.cards[0])
-         console.log(openPile.cards)
-         console.log(stockPile.cards)
+        //  console.log(openPile.cards[0])
+        //  console.log(openPile.cards)
+        //  console.log(stockPile.cards)
     }
 });
 
 //Card Select
 
-// rowDivs.forEach(rowContainer => {
-//     rowContainer.addEventListener('click', () => {
-//         console.log("Row Clicked")
-//         // rowContent.classList.add('selected')  
-//         // rowContent.classList.add('firstStack') 
+ rowDivs.forEach(element => {
+    element.addEventListener('click', () => {
+        console.log("Row Clicked: " + element.id);
+        // rowContent.classList.add('selected')  
+        // rowContent.classList.add('firstStack') 
        
       
      
-//     });
-// });
+    });
+ });
