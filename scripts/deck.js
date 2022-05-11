@@ -48,9 +48,7 @@ class Card {
      createCardDiv() {
         const cardDiv = document.createElement('div')
         cardDiv.classList.add("card", this.color)
-        // cardDiv.classList.add("cardValue", "draggable", this.color)
-        //cardDiv.classList.add("unselectable")
-        cardDiv.draggable = true
+        //cardDiv.draggable = true
         cardDiv.dataset.value = `${this.value} ${this.suit}`
         
         return cardDiv
@@ -71,3 +69,4 @@ function freshDeck () {
     })
 
 }
+

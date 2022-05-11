@@ -47,18 +47,28 @@ function startGame() {
 
 
 function shuffleAndSliceDeck() {
+
     stockPile.shuffle();
+
+    
+    // for each stack do:
     for(let i=1; i<8; i++){
+        
+        // for each card in stack do:
        for( let j=0; j<i; j++){
            stack[i].cards.push(stockPile.pop());
            stack[i].cards[j].container=`stack${i}`;
-        } 
+           if (j == i - 1) stack[i].cards[j].closed = false;
+           createCard(`stack${i}Div`, stack[i].cards[j]);
+        }
+        // make the last card of the stack open
+        // stack[i].cards[stack[i].cards.length - 1].closed = false;
+
+        // show card value in div
+        // showCard(`stack${i}Div`,stack[i].cards[stack[i].cards.length - 1]);
     }
-    // for(let i=0; i<=27; i++) {
-    //     stacks.cards.push(stockPile.pop())
-        
-    // }
-  //  console.log(stacks.cards)
+
+    // DEBUG //
     for(let i=1; i<8; i++){
         console.log(stack[i].cards)
     }
@@ -66,32 +76,46 @@ function shuffleAndSliceDeck() {
 
 }
 
-function sliceStacks() {
-    stacks.cards[0].container="stack1";
-    //for Loops.
-    for (let i=1; i<= 2; i++){
-        stacks.cards[i].container="stack2";
-    }
-    for (let i=3; i<= 5; i++){
-        stacks.cards[i].container="stack3";
-    }
-    for (let i=6; i<= 9; i++){
-        stacks.cards[i].container="stack4";
-    }
-    for (let i=10; i<= 14; i++){
-        stacks.cards[i].container="stack5";
-    }
-    for (let i=15; i<= 20; i++){
-        stacks.cards[i].container="stack6";
-    }
-    for (let i=21; i<= 27; i++){
-        stacks.cards[i].container="stack7";
-    }
+// function sliceStacks() {
+//     stacks.cards[0].container="stack1";
+//     //for Loops.
+//     for (let i=1; i<= 2; i++){
+//         stacks.cards[i].container="stack2";
+//     }
+//     for (let i=3; i<= 5; i++){
+//         stacks.cards[i].container="stack3";
+//     }
+//     for (let i=6; i<= 9; i++){
+//         stacks.cards[i].container="stack4";
+//     }
+//     for (let i=10; i<= 14; i++){
+//         stacks.cards[i].container="stack5";
+//     }
+//     for (let i=15; i<= 20; i++){
+//         stacks.cards[i].container="stack6";
+//     }
+//     for (let i=21; i<= 27; i++){
+//         stacks.cards[i].container="stack7";
+//     }
     
+// }
+
+function showCard(div, card) {
+    let d = document.getElementById(div);
+    // d.classList.add("card", card.color);
+    //cardDiv.draggable = true
+    d.dataset.value = `${card.value} ${card.suit}`;
+    d.innerHTML = `${card.suit} ${card.value}`;
 }
 
-function appendDivs() {
-    
+function createCard(cont, card) {
+    let ct = document.getElementById(cont);
+    let cardDiv = document.createElement('div');
+    cardDiv.classList.add("card", card.color);
+    //cardDiv.draggable = true
+    cardDiv.dataset.value = `${card.value} ${card.suit}`;
+    cardDiv.innerHTML = (card.closed)? `X` : `${card.suit} ${card.value}`;
+    ct.appendChild(cardDiv);
 }
 ////////////////////////
 ////Event Listeners////
@@ -99,9 +123,7 @@ function appendDivs() {
 
 //For Stock Pile add turn card event
 stockPileDiv.addEventListener('click', () => {
-    //console.log("Stock Pile CLicked: " + stockPile.cards.length);
-    stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
-    openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
+
     //If no card left turn the open pile back to stock pile.
     //In reverse order
     if (stockPile.cards.length == 0) {
@@ -115,17 +137,28 @@ stockPileDiv.addEventListener('click', () => {
         openPile.cards = [];
         // console.log("Stock Pile Reloaded");
 
+        // delete all children of openPile
+        openPileDiv.innerHTML = 'Open Pile';
+
     } else {
         //Takes the first element from the Array
         openPile.cards.splice(0, 0, stockPile.pop());
         // openPile.push(stockPile.pop());
 
-         openPile.cards[0].container = "openPile"
-         openPile.cards[0].closed = false
+         openPile.cards[0].container = "openPile";
+         openPile.cards[0].closed = false;
+
+         createCard("openPileDiv", openPile.cards[0]);
+        //  showCard("openPileDiv", openPile.cards[0]);
+
         //  console.log(openPile.cards[0])
-        //  console.log(openPile.cards)
-        //  console.log(stockPile.cards)
+         console.log(openPile.cards)
+         console.log(stockPile.cards)
     }
+
+    //console.log("Stock Pile CLicked: " + stockPile.cards.length);
+    stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
+    // openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
 });
 
 //Card Select
