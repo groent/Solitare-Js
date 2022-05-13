@@ -30,7 +30,7 @@ body {
 }
 
 
-.row {
+.stack {
     height: 100%;
     width: 100%;
     border: 1px solid black;
@@ -58,7 +58,7 @@ body {
 
 }
 
-#firstRow {
+/* #firstRow {
     color: black;
 }
 
@@ -88,7 +88,7 @@ body {
 
 #stockPile {
     color: black;
-}
+} */
 
 
 .computer-deck {
@@ -180,4 +180,10 @@ li {
 .unselectable {
     user-select: none;
     cursor: not-allowed;
+}
+
+.card {
+    background-color: white;
+  
+    position: absolute;
 }

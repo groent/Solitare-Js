@@ -14,7 +14,8 @@ stacks.cards = [];
 // let stacks;
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
-const rowDivs = document.querySelectorAll(".row");
+const stackDivs = document.querySelectorAll(".stack");
+const cardDivs = document.querySelectorAll(".card")
 const CARD_VALUE_MAP = {
     "A": 1,
     "2": 2,
@@ -114,7 +115,7 @@ function createCard(cont, card) {
     cardDiv.classList.add("card", card.color);
     //cardDiv.draggable = true
     cardDiv.dataset.value = `${card.value} ${card.suit}`;
-    cardDiv.innerHTML = (card.closed)? `X` : `${card.suit} ${card.value}`;
+    cardDiv.innerHTML = (card.closed)? `X` : `${card.suit}${card.value}`;
     ct.appendChild(cardDiv);
 }
 ////////////////////////
@@ -161,15 +162,28 @@ stockPileDiv.addEventListener('click', () => {
     // openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
 });
 
-//Card Select
+//stack select
 
- rowDivs.forEach(element => {
+ stackDivs.forEach(element => {
     element.addEventListener('click', () => {
-        console.log("Row Clicked: " + element.id);
-        // rowContent.classList.add('selected')  
-        // rowContent.classList.add('firstStack') 
-       
+        console.log("Stack Clicked: " + element.id);
+        // stackContent.classList.add('selected')  
+        // stackContent.classList.add('firstStack') 
+      // element.classList.add("selected")
       
      
     });
  });
+
+//card select
+
+// cardDivs.forEach(element => {
+//     element.addEventListener('click', () => {
+//         console.log("Card Clicked: " + element.id);
+//         // rowContent.classList.add('selected')  
+//         // rowContent.classList.add('firstStack') 
+       
+      
+     
+//     });
+//  });
