@@ -65,8 +65,6 @@ function shuffleAndSliceDeck() {
         // make the last card of the stack open
         // stack[i].cards[stack[i].cards.length - 1].closed = false;
 
-        // show card value in div
-        // showCard(`stack${i}Div`,stack[i].cards[stack[i].cards.length - 1]);
     }
 
     // DEBUG //
@@ -75,31 +73,11 @@ function shuffleAndSliceDeck() {
     }
     console.log(stockPile.cards);
 
-}
+    for(let i=0; i<stockPile.cards.length; i++){
+        createCard("stockPileDiv", stockPile.cards[i]);
+    }
 
-// function sliceStacks() {
-//     stacks.cards[0].container="stack1";
-//     //for Loops.
-//     for (let i=1; i<= 2; i++){
-//         stacks.cards[i].container="stack2";
-//     }
-//     for (let i=3; i<= 5; i++){
-//         stacks.cards[i].container="stack3";
-//     }
-//     for (let i=6; i<= 9; i++){
-//         stacks.cards[i].container="stack4";
-//     }
-//     for (let i=10; i<= 14; i++){
-//         stacks.cards[i].container="stack5";
-//     }
-//     for (let i=15; i<= 20; i++){
-//         stacks.cards[i].container="stack6";
-//     }
-//     for (let i=21; i<= 27; i++){
-//         stacks.cards[i].container="stack7";
-//     }
-    
-// }
+}
 
 function showCard(div, card) {
     let d = document.getElementById(div);
@@ -115,6 +93,7 @@ function createCard(cont, card) {
     cardDiv.classList.add("card", card.color);
     //cardDiv.draggable = true
     cardDiv.dataset.value = `${card.value} ${card.suit}`;
+    cardDiv.dataset.closed = `${card.closed}`
     cardDiv.innerHTML = (card.closed)? `X` : `${card.suit}${card.value}`;
     ct.appendChild(cardDiv);
 }
@@ -125,32 +104,33 @@ function createCard(cont, card) {
 //For Stock Pile add turn card event
 stockPileDiv.addEventListener('click', () => {
 
-    //If no card left turn the open pile back to stock pile.
-    //In reverse order
-    if (stockPile.cards.length == 0) {
+    // If no card left turn the open pile back to stock pile.
+    // reverse order and update attributes
+    if (stockPileDiv.childNodes.length == 0) {
 
         // copy openPile into stockPile
-        for (let i=0; i<=openPile.cards.length-1; i++ ) {
-                stockPile.cards.splice(0, 0, openPile.cards[i]);
-                stockPile.cards[0].container="stockPile";
-                stockPile.cards[0].closed=true;
+        const numOfCards = openPileDiv.childNodes.length
+        for (let i=0; i<numOfCards; i++ ) {
+
+            stockPileDiv.appendChild(openPileDiv.lastChild);
+            // update attributes of cardDiv
+            stockPileDiv.lastChild.setAttribute('data-closed', 'true');
+            stockPileDiv.lastChild.innerHTML = "X";
+            
         }
-        openPile.cards = [];
-        // console.log("Stock Pile Reloaded");
+        console.log("Stock Pile Reloaded");
 
         // delete all children of openPile
-        openPileDiv.innerHTML = 'Open Pile';
+        // openPileDiv.innerHTML = 'Open Pile';
 
     } else {
-        //Takes the first element from the Array
-        openPile.cards.splice(0, 0, stockPile.pop());
-        // openPile.push(stockPile.pop());
+        // cardDiv handling:
+        // take last element of stockPileDiv and move to openPileDiv
+        openPileDiv.appendChild(stockPileDiv.lastChild);
+        // update attributes of cardDiv
+        openPileDiv.lastChild.setAttribute('data-closed', 'false');
+        openPileDiv.lastChild.innerHTML = openPileDiv.lastChild.getAttribute('data-value');
 
-         openPile.cards[0].container = "openPile";
-         openPile.cards[0].closed = false;
-
-         createCard("openPileDiv", openPile.cards[0]);
-        //  showCard("openPileDiv", openPile.cards[0]);
 
         //  console.log(openPile.cards[0])
          console.log(openPile.cards)
@@ -158,7 +138,7 @@ stockPileDiv.addEventListener('click', () => {
     }
 
     //console.log("Stock Pile CLicked: " + stockPile.cards.length);
-    stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
+    // stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
     // openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
 });
 
