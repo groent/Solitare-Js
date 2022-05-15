@@ -37,7 +37,7 @@ class Card {
         this.value = value;
         this.closed = true;
         this.container = context;
-        this.selected = false
+        this.selected = false;
     }
 
     get color() {

@@ -15,7 +15,7 @@ stacks.cards = [];
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
-const cardDivs = document.querySelectorAll(".card")
+
 const CARD_VALUE_MAP = {
     "A": 1,
     "2": 2,
@@ -33,8 +33,10 @@ const CARD_VALUE_MAP = {
 }
 
 
-
+// start program, create all cards
 startGame();
+// retrieve all created card divs
+var cardDivs = document.querySelectorAll(".card");
 
 
 //Functions
@@ -64,21 +66,20 @@ function shuffleAndSliceDeck() {
         }
         // make the last card of the stack open
         // stack[i].cards[stack[i].cards.length - 1].closed = false;
-
     }
 
     // DEBUG //
     for(let i=1; i<8; i++){
-        console.log(stack[i].cards)
+        console.log(stack[i].cards);
     }
     console.log(stockPile.cards);
 
     for(let i=0; i<stockPile.cards.length; i++){
         createCard("stockPileDiv", stockPile.cards[i]);
     }
-
 }
 
+// Not used at the moment
 function showCard(div, card) {
     let d = document.getElementById(div);
     // d.classList.add("card", card.color);
@@ -88,14 +89,13 @@ function showCard(div, card) {
 }
 
 function createCard(cont, card) {
-    let ct = document.getElementById(cont);
-    let cardDiv = document.createElement('div');
-    cardDiv.classList.add("card", card.color);
-    //cardDiv.draggable = true
-    cardDiv.dataset.value = `${card.value} ${card.suit}`;
-    cardDiv.dataset.closed = `${card.closed}`
-    cardDiv.innerHTML = (card.closed)? `X` : `${card.suit}${card.value}`;
-    ct.appendChild(cardDiv);
+    let ct = document.getElementById(cont);                         // grab container div
+    let cardDiv = document.createElement('div');                    // create new card div
+    cardDiv.classList.add("card", card.color);                      // set card class attributes
+    if (card.closed) cardDiv.classList.add("closed");
+    cardDiv.innerHTML = `${card.suit}${card.value}`;                // set value text
+    cardDiv.dataset.value = `${card.suit}${card.value}`;            // set value in data-value [OPTIONAL?]
+    ct.appendChild(cardDiv);                                        // place card in container
 }
 ////////////////////////
 ////Event Listeners////
@@ -114,8 +114,7 @@ stockPileDiv.addEventListener('click', () => {
 
             stockPileDiv.appendChild(openPileDiv.lastChild);
             // update attributes of cardDiv
-            stockPileDiv.lastChild.setAttribute('data-closed', 'true');
-            stockPileDiv.lastChild.innerHTML = "X";
+            stockPileDiv.lastChild.classList.add("closed");
             
         }
         console.log("Stock Pile Reloaded");
@@ -128,8 +127,7 @@ stockPileDiv.addEventListener('click', () => {
         // take last element of stockPileDiv and move to openPileDiv
         openPileDiv.appendChild(stockPileDiv.lastChild);
         // update attributes of cardDiv
-        openPileDiv.lastChild.setAttribute('data-closed', 'false');
-        openPileDiv.lastChild.innerHTML = openPileDiv.lastChild.getAttribute('data-value');
+        openPileDiv.lastChild.classList.remove("closed");
 
 
         //  console.log(openPile.cards[0])
@@ -144,26 +142,81 @@ stockPileDiv.addEventListener('click', () => {
 
 //stack select
 
- stackDivs.forEach(element => {
-    element.addEventListener('click', () => {
-        console.log("Stack Clicked: " + element.id);
-        // stackContent.classList.add('selected')  
-        // stackContent.classList.add('firstStack') 
-      // element.classList.add("selected")
-      
-     
-    });
- });
-
-//card select
-
-// cardDivs.forEach(element => {
+//  stackDivs.forEach(element => {
 //     element.addEventListener('click', () => {
-//         console.log("Card Clicked: " + element.id);
-//         // rowContent.classList.add('selected')  
-//         // rowContent.classList.add('firstStack') 
-       
+//         console.log("Stack Clicked: " + element.id);
+//         // stackContent.classList.add('selected')  
+//         // stackContent.classList.add('firstStack') 
+//       // element.classList.add("selected")
       
      
 //     });
 //  });
+
+//card select
+cardDivs.forEach(element => {
+    element.addEventListener('click', () => {
+        console.log("Card Clicked: " + element.dataset.value);
+
+        //check if any card is selected
+        const selCard = document.querySelectorAll(".sel");
+
+
+        // if card is closed do nothing
+        if (!element.classList.contains("closed")) {
+            
+            if (element.classList.contains("sel")) {
+
+                // toggle select card
+                element.classList.remove("sel");
+                selCard.forEach((el) => el.classList.remove("sel"));
+
+
+            } else {
+
+                if (selCard.length == 0) {
+
+                    // if nothing selected, select this card
+                    element.classList.add("sel");
+
+                    // cycle through all siblings, until sel card found
+                    // then select all left siblings
+                    const stck = element.parentNode.querySelectorAll(":not(.closed)");
+                    console.log(stck);
+                    for(let i=0; i<stck.length; i++) {
+                        if(stck[i].classList.contains("sel")) {
+                            for(let j=i; j<stck.length; j++) {
+                                stck[j].classList.add("sel");
+                            }
+                            break;
+                        }
+                    }
+
+                } else {
+
+                    // already card(s) selected, this card is target
+
+                    // retrieve already selected card container
+                    console.log("Source: ");  console.log(selCard);
+                    // retrieve this card container
+                    console.log("Target: " + element.parentNode.id);
+
+                    // execute action according to source and target container
+                    selCard.forEach((el) => element.parentNode.appendChild(el));
+                    // element.parentNode.appendChild(selCard[0]);
+
+                    // deselect all previous selected cards
+                    selCard.forEach((el) => el.classList.remove("sel"));
+
+                }
+               
+            }
+
+        }
+        // rowContent.classList.add('selected')  
+        // rowContent.classList.add('firstStack') 
+       
+      
+     
+    });
+ });
