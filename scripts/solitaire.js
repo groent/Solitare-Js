@@ -142,16 +142,40 @@ stockPileDiv.addEventListener('click', () => {
 
 //stack select
 
-//  stackDivs.forEach(element => {
-//     element.addEventListener('click', () => {
-//         console.log("Stack Clicked: " + element.id);
-//         // stackContent.classList.add('selected')  
-//         // stackContent.classList.add('firstStack') 
-//       // element.classList.add("selected")
+ stackDivs.forEach(element => {
+    element.addEventListener('click', () => {
+    // check if stack has children
+    if (element.childElementCount < 1) {
+        console.log("can move")
+        // check if any card is selected
+        const selCard = document.querySelectorAll(".sel");
+         // already card(s) selected, this card is target
+
+                    // retrieve already selected card container
+                    console.log("Source: ");  console.log(selCard);
+                    // retrieve this card container
+                    console.log("Target: " + element.id);
+
+                    // execute action according to source and target container
+                    selCard.forEach((el) => element.appendChild(el));
+                    // element.parentNode.appendChild(selCard[0]);
+
+                    // deselect all previous selected cards
+                    selCard.forEach((el) => el.classList.remove("sel"));
+
+    } else {  
+        // if stack has children do nothing  
+    }
+    
+    
+        //     console.log("Stack Clicked: " + element.id);
+    //     // stackContent.classList.add('selected')  
+    //     // stackContent.classList.add('firstStack') 
+    //   // element.classList.add("selected")
       
      
-//     });
-//  });
+    });
+ });
 
 //card select
 cardDivs.forEach(element => {
