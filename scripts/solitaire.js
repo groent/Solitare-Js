@@ -145,8 +145,12 @@ stockPileDiv.addEventListener('click', () => {
  stackDivs.forEach(element => {
     element.addEventListener('click', () => {
     // check if stack has children
-    if (element.childElementCount < 1) {
-        console.log("can move")
+    // selected cards
+    const selCard = document.querySelectorAll(".sel")
+
+    if (element.childElementCount < 1 && selCard) {
+        // DEBUG //
+        // console.log("can move")
         // check if any card is selected
         const selCard = document.querySelectorAll(".sel");
          // already card(s) selected, this card is target
@@ -163,17 +167,12 @@ stockPileDiv.addEventListener('click', () => {
                     // deselect all previous selected cards
                     selCard.forEach((el) => el.classList.remove("sel"));
 
+                    // flip cards closed cards if no open cards left
+
     } else {  
         // if stack has children do nothing  
     }
-    
-    
-        //     console.log("Stack Clicked: " + element.id);
-    //     // stackContent.classList.add('selected')  
-    //     // stackContent.classList.add('firstStack') 
-    //   // element.classList.add("selected")
-      
-     
+
     });
  });
 
@@ -231,6 +230,8 @@ cardDivs.forEach(element => {
 
                     // deselect all previous selected cards
                     selCard.forEach((el) => el.classList.remove("sel"));
+
+                    
 
                 }
                
