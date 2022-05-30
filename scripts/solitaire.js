@@ -179,6 +179,7 @@ stockPileDiv.addEventListener('click', () => {
 //card select
 cardDivs.forEach(element => {
     element.addEventListener('click', () => {
+        // DEBUG //
         console.log("Card Clicked: " + element.dataset.value);
 
         //check if any card is selected
