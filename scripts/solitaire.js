@@ -299,6 +299,7 @@ cardDivs.forEach(element => {
 
             } else { // this card is not selected
 
+                // TODO: make sure that 
                 if (selCard.length == 0) {
 
                     // nothing selected; select this card by adding sel class
