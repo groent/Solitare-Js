@@ -46,8 +46,8 @@ body > div {
 }
 
 .bay {
+    display: flex;
     height: 8rem;
-    line-height: 8rem;
     width: 5rem;
     float: right;
 }
