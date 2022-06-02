@@ -210,7 +210,7 @@ stackDivs.forEach(element => {
         // retrieve all selected cards
         const selCard = document.querySelectorAll(".sel");
 
-        // if stack has no children AND there are cardDivs selected AND top card is King
+        // if stack has no children AND there are cardDivs selected AND top card of selected is King
         if (element.childElementCount < 1 && selCard && selCard[0].dataset.value.substr(1, 1) === "K") {
 
             // DEBUG // retrieve already selected card container
@@ -299,21 +299,20 @@ cardDivs.forEach(element => {
 
             } else { // this card is not selected
 
-                // TODO: make sure that 
-                if (selCard.length == 0) {
+                if (selCard && selCard.length == 0) {
 
                     // nothing selected; select this card by adding sel class
                     element.classList.add("sel");
 
-                    // cycle through all siblings, until sel card found
-                    // then select all further siblings
+                    // TODO: make sure that card is not in openPile (only select one)
 
                     // retrieve all open cards in this stack/pile
-                    // TODO: make sure it is not a child of openPile
                     const stck = element.parentNode.querySelectorAll(":not(.closed)");
 
-                    console.log(stck); // DEBUG //
+                    // console.log(stck); // DEBUG //
 
+                    // cycle through all siblings, until sel card found
+                    // then select all further siblings
                     
                     for(let i=0; i<stck.length; i++) {          // go through all open cards in container
                         if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
@@ -327,13 +326,15 @@ cardDivs.forEach(element => {
                 } else { // other card(s) are selected
 
                     // DEBUG // retrieve already selected card container
-                    console.log("Source: ");  console.log(selCard);
+                    console.log("Source: " + selCard[0].parentNode.id);
                     // DEBUG // retrieve this card container
                     console.log("Target: " + element.parentNode.id);
 
 
                     // already card(s) selected, this card is target
+                    
                     // TODO: make sure this card is not in openPile, otherwise deselect
+                    
                     // TODO: check if move is allowed
 
                     // this card is target, move cardDiv(s) from source to target container
@@ -348,7 +349,7 @@ cardDivs.forEach(element => {
                     // TODO: check if game has ended
                 }
             }
-        } // end of: this card is open
+        } // end of: this card is open and NOT in bay
 
     }); // end of: onclick for cardDiv
 }); // end of: for all cardDivs
