@@ -273,11 +273,17 @@ bayDivs.forEach(element => {
                 // replace bay data-value with card data-value
                 element.dataset.value = selCard[0].dataset.value;
 
+                // save past stack
+                const pastStack = selCard[0].parentNode.id;
+                
+
                 // append card to bay
                 element.appendChild(selCard[0]);
 
                 // deselect card
                 element.lastChild.classList.remove("sel");
+                // flip card
+                flipCard(pastStack)
         } else {
             const selCard = document.querySelectorAll(".sel");
             selCard.forEach((el) => el.classList.remove("sel"));
@@ -346,7 +352,8 @@ cardDivs.forEach(element => {
                     console.log("Source: " + selCard[0].parentNode.id);
                     // DEBUG // retrieve this card container
                     console.log("Target: " + element.parentNode.id);
-
+                    // stackDiv
+                    const pastStack = selCard[0].parentNode.id;
                     // already card(s) selected, this card is target
                     
                     // TODO: make sure this card is not in openPile, otherwise deselect DONE?
@@ -362,7 +369,7 @@ cardDivs.forEach(element => {
                             console.log(selCard[0].parentNode.id)
                             
                     // TODO: check if source container is stack and no open cards -> turn card
-                    selCard.forEach((el) => el.parentNode.classList.lastChild.remove("closed"));
+                    flipCard(pastStack)
                     
                     // deselect all selected cards
                     
