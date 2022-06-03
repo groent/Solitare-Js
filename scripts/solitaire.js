@@ -310,10 +310,6 @@ cardDivs.forEach(element => {
                     // nothing selected; select this card by adding sel class
                     element.classList.add("sel");
 
-                    // TODO: make sure that card is not in openPile (only select one) WORKING ON THIS
-                    // if (element.parentNode.id.contains("openPile")) {
-                    //     console.log("Moved to Open Pile")
-                    // }
                     // retrieve all open cards in this stack/pile
                     const stck = element.parentNode.querySelectorAll(":not(.closed)");
 
@@ -331,7 +327,8 @@ cardDivs.forEach(element => {
                         }                                       // break out of for loop
                     }
 
-                } else { // other card(s) are selected
+                } else if (element.parentNode.id != "openPileDiv") {             // make sure that card is not in openPile (only select one) WORKING ON THIS
+                    // other card(s) are selected
 
                     // DEBUG // retrieve already selected card container
                     console.log("Source: " + selCard[0].parentNode.id);
@@ -355,6 +352,8 @@ cardDivs.forEach(element => {
                     // TODO: check if source container is stack and no open cards -> turn card
 
                     // TODO: check if game has ended
+                } else {
+                    console.log("move can't be done")
                 }
             }
         } // end of: this card is open and NOT in bay
