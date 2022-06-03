@@ -225,7 +225,7 @@ stackDivs.forEach(element => {
         const selCard = document.querySelectorAll(".sel");
 
         // if stack has no children AND there are cardDivs selected AND top card of selected is King
-        if (element.childElementCount < 1 && selCard && selCard[0].dataset.value.substr(1, 1) === "K") {
+        if (element.childElementCount < 1 && selCard && selCard[0].dataset.value.substr(1, 2) === "K") {
 
             // DEBUG // retrieve already selected card container
             // console.log("Source: ");  console.log(selCard);
@@ -268,7 +268,7 @@ bayDivs.forEach(element => {
         // if only 1 cardDiv selected AND suits are same AND value is 1+ of bay
         if (selCard && selCard.length == 1 && 
             selCard[0].dataset.value.substr(0, 1) == element.dataset.value.substr(0, 1) && 
-            CARD_VALUE_MAP[selCard[0].dataset.value.substr(1, 1)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 1)] + 1) {
+            CARD_VALUE_MAP[selCard[0].dataset.value.substr(1, 2)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 2)] + 1) {
                 
                 // DEBUG //
                 console.log("1 correct card selected and correct bay clicked: " + element.dataset.value);
@@ -404,6 +404,7 @@ cardDivs.forEach(element => {
 // game restart
 
 restart.addEventListener('click', () => {
+    // TODO: confirmation pop-up
     window.location.reload();
 })
 
