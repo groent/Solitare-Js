@@ -160,7 +160,9 @@ function createCard(cont, card) {  // given element in array, create card div an
 stockPileDiv.addEventListener('click', () => {
 // *****************************************************************
 
-    // TODO: deselect all cards
+    // TODO: deselect all cards DONE
+    const selCard = document.querySelectorAll(".sel");
+    selCard.forEach((el) => el.classList.remove("sel"));
 
     // If no card left turn the open pile back to stock pile.
     // reverse order and update attributes
@@ -264,6 +266,9 @@ bayDivs.forEach(element => {
 
                 // deselect card
                 element.lastChild.classList.remove("sel");
+        } else {
+            const selCard = document.querySelectorAll(".sel");
+            selCard.forEach((el) => el.classList.remove("sel"));
         }
 
     }); // end of: onclick for stackDiv
@@ -291,8 +296,9 @@ cardDivs.forEach(element => {
             if (element.classList.contains("sel")) {
 
                 // deselect card
-                // TODO: is this necessary?
-                element.classList.remove("sel");
+                // TODO: is this necessary?  
+                // it isn't, leaving it around just in case. 
+                //element.classList.remove("sel");
 
                 // also deselect any other card
                 selCard.forEach((el) => el.classList.remove("sel"));
@@ -304,8 +310,10 @@ cardDivs.forEach(element => {
                     // nothing selected; select this card by adding sel class
                     element.classList.add("sel");
 
-                    // TODO: make sure that card is not in openPile (only select one)
-
+                    // TODO: make sure that card is not in openPile (only select one) WORKING ON THIS
+                    // if (element.parentNode.id.contains("openPile")) {
+                    //     console.log("Moved to Open Pile")
+                    // }
                     // retrieve all open cards in this stack/pile
                     const stck = element.parentNode.querySelectorAll(":not(.closed)");
 
