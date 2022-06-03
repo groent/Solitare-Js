@@ -35,6 +35,7 @@ stacks.cards = [];
 // let stacks;
 
 // grab divs in html to append card divs to
+const restart = document.getElementById("restart");
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
@@ -60,7 +61,7 @@ const CARD_VALUE_MAP = {
     "K": 13
 }
 const SUIT_VALUE_MAP = {
-    "♠": "black", // for empty bay
+    "♠": "black", 
     "♣": "black",
     "♥": "red",
     "♦": "red"
@@ -153,8 +154,7 @@ function createCard(cont, card) {  // given element in array, create card div an
 
 
 function isWinner () { // check if the victory conditions have been met, (might be discarted)
-    const cardsInDeck = querySelectorAll
-    return CARD_VALUE_MAP[cardOne.value] > CARD_VALUE_MAP[cardTwo.value]
+    document.write('<h1>YOU WON!</h1><br><button id="restart">New Game</button>')
 }
 
 function flipCard (c) { // turn the card
@@ -231,7 +231,7 @@ stackDivs.forEach(element => {
             // console.log("Source: ");  console.log(selCard);
             // DEBUG // retrieve this container
             console.log("Target: " + element.id);
-
+            const pastStack = selCard[0].parentNode.id;
             // this stack is target, move cardDiv(s) from source to target container
             // execute action according to source and target container
             selCard.forEach((el) => element.appendChild(el));
@@ -242,6 +242,8 @@ stackDivs.forEach(element => {
             selCard.forEach((el) => el.classList.remove("sel"));
 
             // flip cards closed cards if no open cards left
+            
+            flipCard(pastStack)
 
         } else {  
             // if stack has children do nothing 
@@ -257,7 +259,8 @@ stackDivs.forEach(element => {
 bayDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
-        console.log("bay clicked: " + element.dataset.value.substr(0, 1));
+    // DEBUG //    
+    console.log("bay clicked: " + element.dataset.value.substr(0, 1));
 
         // retrieve all selected cards
         const selCard = document.querySelectorAll(".sel");
@@ -284,6 +287,9 @@ bayDivs.forEach(element => {
                 element.lastChild.classList.remove("sel");
                 // flip card
                 flipCard(pastStack)
+                if (bayDivs.childElementCount === 56) {
+                    isWinner();
+                }
         } else {
             const selCard = document.querySelectorAll(".sel");
             selCard.forEach((el) => el.classList.remove("sel"));
@@ -368,7 +374,7 @@ cardDivs.forEach(element => {
                     // element.parentNode.appendChild(selCard[0]);
                             console.log(selCard[0].parentNode.id)
                             
-                    // TODO: check if source container is stack and no open cards -> turn card
+                    // TODO: check if source container is stack and no open cards -> turn card DONE
                     flipCard(pastStack)
                     
                     // deselect all selected cards
@@ -377,6 +383,7 @@ cardDivs.forEach(element => {
 
                   
                     // TODO: check if game has ended
+                    // There is most likely a better solution for this
                         } else {
                             console.log("this move is not allowed")
                             selCard.forEach((el) => el.classList.remove("sel"));
@@ -385,9 +392,18 @@ cardDivs.forEach(element => {
                 } else {
                     // DEBUG //
                     console.log("you can't move cards to the open pile")
+                    const selCard = document.querySelectorAll(".sel");
+                    selCard.forEach((el) => el.classList.remove("sel"));
                 }
             }
         } // end of: this card is open and NOT in bay
 
     }); // end of: onclick for cardDiv
 }); // end of: for all cardDivs
+
+// game restart
+
+restart.addEventListener('click', () => {
+    window.location.reload();
+})
+
