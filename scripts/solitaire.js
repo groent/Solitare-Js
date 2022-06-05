@@ -145,9 +145,12 @@ function createCard(cont, card) {  // given element in array, create card div an
 } // end of: createCard()
 
 
-function isWinner() { // check if the victory conditions have been met, (might be discarted)
-    document.write('<h1>YOU WON!</h1><br><button id="restart">New Game</button>')
-}
+function isWinner() { // show winner message to user
+    
+    document.getElementsByTagName('h1')[0].style.display = 'block';
+
+} // end of isWinner()
+
 
 function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
 
@@ -254,7 +257,8 @@ bayDivs.forEach(element => {
             moveCards(selCards, element);
 
             // check if win condition has been met
-            if (bayDivs.childElementCount === 56) {
+            // if (bayDivs.childElementCount === 56) {
+            if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
                 isWinner();
             }
 
@@ -321,9 +325,11 @@ cardDivs.forEach(element => {
                         // this card is target, move cardDiv(s) from source to target container
                         moveCards(selCards, element.parentNode);
                         
-                        // TODO: check if game has ended
-                        // There is most likely a better solution for this
-                            
+                        // check if win condition has been met
+                        if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
+                            isWinner();
+                        }
+
                     } else {    // move conditions have not been satisfied
 
                         // DEBUG // console.log("this move is not allowed");
