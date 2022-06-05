@@ -7,7 +7,7 @@
 /*                                                                     */
 /*  May 2022 - present                                                 */
 /*                                                                     */
-/*  Refer to Visio (+++++++++++++) for HLD and functional design       */
+/*  Refer to Visio (docs/Solitaire.vsd) for HLD and functional design  */
 /*                                                                     */
 /***********************************************************************/
 
@@ -28,11 +28,9 @@ for (let i=1; i<8; i++) {
     stack[i].cards = [];
 }
 
-// DEBUG // this is not used
 const stacks = new Object(); 
 openPile.cards  = [];
 stacks.cards = [];
-// let stacks;
 
 // grab divs in html to append card divs to
 const restart = document.getElementById("restart");
@@ -84,9 +82,8 @@ var cardDivs = document.querySelectorAll(".card");
 // *****************************************************************
 function startGame() {  // game initialization
 // *****************************************************************
-    //renderStacks();
     shuffleAndSliceDeck();
-    // sliceStacks();
+    
 } // end of: startGame()
 
 
@@ -118,16 +115,13 @@ stockPile.shuffle(); // 'shuffle()' is defined in deck.js
            // create card div, and append it to container
            createCard(`stack${i}Div`, stack[i].cards[j]);
         }
-
-        // DEBUG // make the last card of the stack open
-        // stack[i].cards[stack[i].cards.length - 1].closed = false;
     }
 
-    // DEBUG // console.log all the cards with their piles
-    for(let i=1; i<8; i++){
-        console.log(stack[i].cards);
-    }
-    console.log(stockPile.cards);
+    // // DEBUG // console.log all the cards with their piles
+    // for(let i=1; i<8; i++){
+    //     console.log(stack[i].cards);
+    // }
+    // console.log(stockPile.cards);
 
     // for all the left-over cards in the stockPile array, create div, and append it to container
     for(let i=0; i<stockPile.cards.length; i++){
@@ -135,8 +129,6 @@ stockPile.shuffle(); // 'shuffle()' is defined in deck.js
     }
 } // end of: shuffleAndSliceDeck()
 
-
-// removed showCard(), reason: It will not be necessary
 
 // *****************************************************************
 function createCard(cont, card) {  // given element in array, create card div and append it to 'cont'
@@ -153,15 +145,30 @@ function createCard(cont, card) {  // given element in array, create card div an
 } // end of: createCard()
 
 
-function isWinner () { // check if the victory conditions have been met, (might be discarted)
+function isWinner() { // check if the victory conditions have been met, (might be discarted)
     document.write('<h1>YOU WON!</h1><br><button id="restart">New Game</button>')
 }
 
-function flipCard (c) { // turn the card
-    const source = document.getElementById(c)
-    source.lastChild.classList.remove("closed")
-    console.log("flipped " + c)
-}
+function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
+
+    // determine if card has to be turned
+    const notSelCards = cardDivs[0].parentNode.querySelectorAll(":not(.sel)");
+
+    if (notSelCards && notSelCards.length > 0) { 
+
+        // if there are cards that will be left behind in the stack or the open pile
+        // make sure bottom card is opened (not with .closed)
+        notSelCards[notSelCards.length-1].classList.remove("closed");
+    }
+
+    // forEach cardDivs move and deselect card
+    cardDivs.forEach((el) => {
+        trgtCont.appendChild(el);
+        el.classList.remove("sel");
+    });
+
+} // end of: moveCards()
+
 
 /***********************************************************************/
 /*                          EVENT LISTENERS                            */
@@ -171,10 +178,10 @@ function flipCard (c) { // turn the card
 // for Stock Pile add turn card action on click event
 stockPileDiv.addEventListener('click', () => {
 // *****************************************************************
-
-    // TODO: deselect all cards DONE
-    const selCard = document.querySelectorAll(".sel");
-    selCard.forEach((el) => el.classList.remove("sel"));
+    
+    // retrieve all selected cards
+    const selCards = document.querySelectorAll(".sel");
+    selCards.forEach((el) => el.classList.remove("sel"));
 
     // If no card left turn the open pile back to stock pile.
     // reverse order and update attributes
@@ -189,28 +196,15 @@ stockPileDiv.addEventListener('click', () => {
             stockPileDiv.lastChild.classList.add("closed");
             
         }
-        console.log("Stock Pile Reloaded");
 
-        // delete all children of openPile
-        // openPileDiv.innerHTML = 'Open Pile';
-
-    } else {
+    } else { // stockPile has children
         // cardDiv handling:
         // take last element of stockPileDiv and move to openPileDiv
         openPileDiv.appendChild(stockPileDiv.lastChild);
 
         // update attributes of cardDiv
         openPileDiv.lastChild.classList.remove("closed");
-
-        // DEBUG //  console.log(openPile.cards[0])
-        //  console.log(openPile.cards)
-        //  console.log(stockPile.cards)
     }
-
-    // DEBUG // 
-    //console.log("Stock Pile CLicked: " + stockPile.cards.length);
-    // stockPileDiv.innerHTML = `Stock Pile: ${stockPile.cards.length}`;
-    // openPileDiv.innerHTML = `Open Pile: ${openPile.cards.length}`;
 });
 
 
@@ -222,28 +216,13 @@ stackDivs.forEach(element => {
 // *****************************************************************
 
         // retrieve all selected cards
-        const selCard = document.querySelectorAll(".sel");
+        const selCards = document.querySelectorAll(".sel");
 
         // if stack has no children AND there are cardDivs selected AND top card of selected is King
-        if (element.childElementCount < 1 && selCard && selCard[0].dataset.value.substr(1, 2) === "K") {
+        if (element.childElementCount < 1 && selCards && selCards[0].dataset.value.substr(1, 2) === "K") {
 
-            // DEBUG // retrieve already selected card container
-            // console.log("Source: ");  console.log(selCard);
-            // DEBUG // retrieve this container
-            console.log("Target: " + element.id);
-            const pastStack = selCard[0].parentNode.id;
-            // this stack is target, move cardDiv(s) from source to target container
-            // execute action according to source and target container
-            selCard.forEach((el) => element.appendChild(el));
-
-            // element.parentNode.appendChild(selCard[0]);
-
-            // deselect all selected cards
-            selCard.forEach((el) => el.classList.remove("sel"));
-
-            // flip cards closed cards if no open cards left
-            
-            flipCard(pastStack)
+            // move King to empty stack
+            moveCards(selCards, element);
 
         } else {  
             // if stack has children do nothing 
@@ -259,45 +238,32 @@ stackDivs.forEach(element => {
 bayDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
-    // DEBUG //    
-    console.log("bay clicked: " + element.dataset.value.substr(0, 1));
 
         // retrieve all selected cards
-        const selCard = document.querySelectorAll(".sel");
+        const selCards = document.querySelectorAll(".sel");
         
         // if only 1 cardDiv selected AND suits are same AND value is 1+ of bay
-        if (selCard && selCard.length == 1 && 
-            selCard[0].dataset.value.substr(0, 1) == element.dataset.value.substr(0, 1) && 
-            CARD_VALUE_MAP[selCard[0].dataset.value.substr(1, 2)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 2)] + 1) {
+        if (selCards && selCards.length == 1 && 
+            selCards[0].dataset.value.substr(0, 1) == element.dataset.value.substr(0, 1) && 
+            CARD_VALUE_MAP[selCards[0].dataset.value.substr(1, 2)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 2)] + 1) {
                 
-                // DEBUG //
-                console.log("1 correct card selected and correct bay clicked: " + element.dataset.value);
+            // replace bay data-value with card data-value
+            element.dataset.value = selCards[0].dataset.value;
 
-                // replace bay data-value with card data-value
-                element.dataset.value = selCard[0].dataset.value;
+            // append selected card to bay
+            moveCards(selCards, element);
 
-                // save past stack
-                const pastStack = selCard[0].parentNode.id;
-                
+            // check if win condition has been met
+            if (bayDivs.childElementCount === 56) {
+                isWinner();
+            }
 
-                // append card to bay
-                element.appendChild(selCard[0]);
-
-                // deselect card
-                element.lastChild.classList.remove("sel");
-                // flip card
-                flipCard(pastStack)
-                if (bayDivs.childElementCount === 56) {
-                    isWinner();
-                }
-        } else {
-            const selCard = document.querySelectorAll(".sel");
-            selCard.forEach((el) => el.classList.remove("sel"));
+        } else { // move is not allowed
+            // deselect all selected cards
+            selCards.forEach((el) => el.classList.remove("sel"));
         }
-
     }); // end of: onclick for stackDiv
 }); // end of: for all stackDivs
-
 
 
 // card select:
@@ -307,11 +273,10 @@ bayDivs.forEach(element => {
 cardDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
-        // DEBUG //
-        console.log("Card Clicked: " + element.dataset.value);
+        // DEBUG // console.log("Card Clicked: " + element.dataset.value);
 
         // retrieve all selected cards
-        const selCard = document.querySelectorAll(".sel");
+        const selCards = document.querySelectorAll(".sel");
 
         // if this card is open AND this card is NOT in bay; then it is selectable
         if (!element.classList.contains("closed") && !element.parentNode.classList.contains("bay")) {
@@ -319,17 +284,12 @@ cardDivs.forEach(element => {
             // if this card is selected
             if (element.classList.contains("sel")) {
 
-                // deselect card
-                // TODO: is this necessary?  
-                // it isn't, leaving it around just in case. 
-                //element.classList.remove("sel");
-
-                // also deselect any other card
-                selCard.forEach((el) => el.classList.remove("sel"));
+                // deselect all cards
+                selCards.forEach((el) => el.classList.remove("sel"));
 
             } else { // this card is not selected
 
-                if (selCard && selCard.length == 0) {
+                if (selCards && selCards.length == 0) {
 
                     // nothing selected; select this card by adding sel class
                     element.classList.add("sel");
@@ -351,49 +311,33 @@ cardDivs.forEach(element => {
                         }                                       // break out of for loop
                     }
 
-                } else if (element.parentNode.id != "openPileDiv") {             // make sure that card is not in openPile (only select one) WORKING ON THIS
-                    // other card(s) are selected
-                    // flipCard(selCard[0].parentNode.id)
-                    // DEBUG // retrieve already selected card container
-                    console.log("Source: " + selCard[0].parentNode.id);
-                    // DEBUG // retrieve this card container
-                    console.log("Target: " + element.parentNode.id);
-                    // stackDiv
-                    const pastStack = selCard[0].parentNode.id;
-                    // already card(s) selected, this card is target
-                    
-                    // TODO: make sure this card is not in openPile, otherwise deselect DONE?
-                    
-                    // TODO: check if move is allowed DONE
-                    if (SUIT_VALUE_MAP[selCard[0].dataset.value.substr(0, 1)] != SUIT_VALUE_MAP[element.dataset.value.substr(0, 1)] && 
-                        CARD_VALUE_MAP[selCard[0].dataset.value.substr(1, 2)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 2)] - 1) {
-                            // this card is target, move cardDiv(s) from source to target container
-                            
-                            
-                            selCard.forEach((el) => element.parentNode.appendChild(el));
-                    // element.parentNode.appendChild(selCard[0]);
-                            console.log(selCard[0].parentNode.id)
-                            
-                    // TODO: check if source container is stack and no open cards -> turn card DONE
-                    flipCard(pastStack)
-                    
-                    // deselect all selected cards
-                    
-                    selCard.forEach((el) => el.classList.remove("sel"));
+                } else if (element.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
 
-                  
-                    // TODO: check if game has ended
-                    // There is most likely a better solution for this
-                        } else {
-                            console.log("this move is not allowed")
-                            selCard.forEach((el) => el.classList.remove("sel"));
-                        }
+                    // already card(s) selected, this card is target
+                    // check if move is allowed: alternate suit colour and  the card value is one less
+                    if (SUIT_VALUE_MAP[selCards[0].dataset.value.substr(0, 1)] != SUIT_VALUE_MAP[element.dataset.value.substr(0, 1)] && 
+                        CARD_VALUE_MAP[selCards[0].dataset.value.substr(1, 2)] == CARD_VALUE_MAP[element.dataset.value.substr(1, 2)] - 1) {
+                           
+                        // this card is target, move cardDiv(s) from source to target container
+                        moveCards(selCards, element.parentNode);
+                        
+                        // TODO: check if game has ended
+                        // There is most likely a better solution for this
+                            
+                    } else {    // move conditions have not been satisfied
+
+                        // DEBUG // console.log("this move is not allowed");
+
+                        // deselect all cards
+                        selCards.forEach((el) => el.classList.remove("sel"));
+                    }
                     
-                } else {
-                    // DEBUG //
-                    console.log("you can't move cards to the open pile")
-                    const selCard = document.querySelectorAll(".sel");
-                    selCard.forEach((el) => el.classList.remove("sel"));
+                } else { // try moving card to open pile
+                    
+                    // DEBUG // console.log("you can't move cards to the open pile")
+
+                    // deselect all cards
+                    selCards.forEach((el) => el.classList.remove("sel"));
                 }
             }
         } // end of: this card is open and NOT in bay
