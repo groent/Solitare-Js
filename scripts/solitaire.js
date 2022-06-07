@@ -38,8 +38,7 @@ const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
 const bayDivs = document.querySelectorAll(".bay");
-// DEBUG //
-console.log(stockPileDiv.id)
+
 
 // map card face value to integer value
 const CARD_VALUE_MAP = {
@@ -145,13 +144,6 @@ function createCard(cont, card) {  // given element in array, create card div an
 } // end of: createCard()
 
 
-function isWinner() { // show winner message to user
-    
-    document.getElementsByTagName('h1')[0].style.display = 'block';
-
-} // end of isWinner()
-
-
 function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
 
     // determine if card has to be turned
@@ -169,6 +161,11 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
         trgtCont.appendChild(el);
         el.classList.remove("sel");
     });
+
+    // check if win condition was met and give feedback
+    if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
+        document.getElementsByTagName('h1')[0].style.display = 'block';
+    }
 
 } // end of: moveCards()
 
@@ -256,18 +253,12 @@ bayDivs.forEach(element => {
             // append selected card to bay
             moveCards(selCards, element);
 
-            // check if win condition has been met
-            // if (bayDivs.childElementCount === 56) {
-            if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
-                isWinner();
-            }
-
         } else { // move is not allowed
             // deselect all selected cards
             selCards.forEach((el) => el.classList.remove("sel"));
         }
-    }); // end of: onclick for stackDiv
-}); // end of: for all stackDivs
+    }); // end of: onclick for bayDiv
+}); // end of: for all bayDivs
 
 
 // card select:
@@ -325,11 +316,6 @@ cardDivs.forEach(element => {
                         // this card is target, move cardDiv(s) from source to target container
                         moveCards(selCards, element.parentNode);
                         
-                        // check if win condition has been met
-                        if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
-                            isWinner();
-                        }
-
                     } else {    // move conditions have not been satisfied
 
                         // DEBUG // console.log("this move is not allowed");
@@ -350,6 +336,46 @@ cardDivs.forEach(element => {
 
     }); // end of: onclick for cardDiv
 }); // end of: for all cardDivs
+
+
+// *****************************************************************
+// for each cardDiv; check if card can go to any bay on double click, 
+// move card if allowed    
+cardDivs.forEach(cel => {
+    cel.addEventListener('dblclick', () => {
+// *****************************************************************
+        // DEBUG // console.log("Card Double Clicked: " + cel.dataset.value);
+
+        // check all 4 bays for correct suit and value
+        bayDivs.forEach(bel => {
+            if (cel.dataset.value.substr(0, 1) == bel.dataset.value.substr(0, 1) && 
+                CARD_VALUE_MAP[cel.dataset.value.substr(1, 2)] == CARD_VALUE_MAP[bel.dataset.value.substr(1, 2)] + 1) {
+                // DEBUG // console.log("Card can be moved: " + cel.dataset.value);
+                
+                // replace bay data-value with card data-value
+                bel.dataset.value = cel.dataset.value;
+                
+                // pass cel to an array
+                const cards = [];
+                cards.push(cel);
+
+                // add sel class to this card
+                // this card will be deselected later on
+                // ensure closed card is working properly
+                cel.classList.add("sel");
+
+                // append selected card to bay
+                moveCards(cards, bel);
+
+
+            } 
+        });
+
+    }); // end of: onDblClick for cardDiv
+}); // end of: for all cardDivs
+
+
+
 
 // game restart
 

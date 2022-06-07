@@ -10,8 +10,11 @@
 </head>
 
 <body>
+    
     <h1 class="linear-wipe">Congratulations! <br />You won.</h1>
-    <button id="restart">Restart</button>
+
+    <button onclick="window.location.reload();">New Game</button>
+    
     <div>
         <div id="piles">
             <div class = "container" id="stockPileDiv"></div>
@@ -35,6 +38,8 @@
         <div class="container stack" id="stack7Div">Seventh Stack:</div>
     </div>
 
+    
+    
 
     <!-- Our script has to wait for jQuery to load, first plugins -->
     <script src="../scripts/solitaire.js" type="module"></script>
