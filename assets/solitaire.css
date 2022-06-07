@@ -11,6 +11,37 @@ h1 {
     display: none;
 }
 
+.linear-wipe {
+    text-align: center;
+    background: linear-gradient(-45deg, #058460 20%, #f79503 40%, #f79503 60%, #058460 80%);
+    background-size: 200% auto;
+
+    color: #000;
+    background-clip: text;
+    /* text-fill-color: transparent; */
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    animation: shiny 1.5s linear infinite;
+    -moz-animation: shiny 1.5s linear infinite;
+    -webkit-animation: shiny 1.5s linear infinite;
+}
+@keyframes shiny {
+    0% { 
+        background-position: 0px 50%; 
+    }
+     /* 50% { 
+        background-position: 100% 50%; 
+    }  */
+    100% { 
+        background-position: 200% 50%; 
+    }
+}
+
+button {
+    margin: 0 40%;
+}
+
 /* Card suits */
 .red {
     color: red;
