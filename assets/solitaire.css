@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    font-size: 2rem;
+    font-size: 24px;
 }
 
 h1 {
@@ -23,16 +23,16 @@ h1 {
     -webkit-text-fill-color: transparent;
 
     animation: shiny 1.5s linear infinite;
-    -moz-animation: shiny 1.5s linear infinite;
+	-moz-animation: shiny 1.5s linear infinite;
     -webkit-animation: shiny 1.5s linear infinite;
 }
 @keyframes shiny {
     0% { 
         background-position: 0px 50%; 
     }
-     /* 50% { 
+    /* 50% { 
         background-position: 100% 50%; 
-    }  */
+    } */
     100% { 
         background-position: 200% 50%; 
     }
@@ -61,77 +61,33 @@ body > div {
 }
 
 .container {
-    margin: 1rem;
+    margin: 16px;
     height: 100%;
-    min-height: 8rem;
-    min-width: 5rem;
+    min-height: 128px;
+    min-width: 80px;
     position: relative;
     display: block;
     float: left;
-    /* display: flex; */
-    /* justify-content: center; */
+    justify-content: center;
     text-align: center;
-    color: Gray;
+    color: gray;
+    border: 1px dashed gray;
+    border-radius: 8px;
     user-select: none;
 }
 
 .bay {
     display: flex;
-    height: 8rem;
-    width: 5rem;
+    height: 128px;
+    width: 80px;
     float: right;
 }
 
-
 .stack {
     display: flex;
-    width: 5rem;
+    width: 80px;
 }
 
-/* .text {  - NOT USED FOR NOW
-    grid-column: span 2;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-} */
-
-
-/* .cardValue::after {  - NOT USED FOR NOW
-    
-    content: attr(data-value);
-    float: inline-start;
-    
-}  */
-
-/* li {  - NOT USED FOR NOW
-    list-style-type: none;
-
-} */
-
-
-/* Drag and Drop Classes - NOT USED FOR NOW */
-
-/* .container {
-   color: gray;
-}
-
-.draggable {
-    cursor: move;
-}
-
-.draggable.dragging {
-    opacity: .5;
-} */
-
-.selected { /* NOT USED */
-    background-color: yellow;
-    border: 2px solid black;
-}
-
-.unselectable { /* NOT USED */
-    user-select: none;
-    cursor: not-allowed;
-}
 
 /* ************************************************************** */
 /*   CARD DIV CLASSES, DETERMINE BEHAVIOUR AS WELL                */
@@ -141,77 +97,77 @@ body > div {
 .card {
     background-color: white;
     display: block;
-    height: 8rem;
-    width: 5rem;
+    height: 128px;
+    width: 80px;
     position: absolute;
-    border: 1px solid black;
-    border-radius: .5rem;
+    outline: 1px solid black;
+    border-radius: 8px;
 }
 .card.sel {
-    border: .1rem solid red;
-    border-radius: .2rem;
+    outline: 2px solid red;
 }
+
 .card.closed {
     background: repeating-linear-gradient( -45deg,#fff, #333 1px,#fff 1px);
     color: transparent;
 }
 .stack .card {
-    margin-top: 2rem;
+    margin-top: 32px;
 }
 .stack .card:nth-child(2) {
-    margin-top: 4rem;
+    margin-top: 64px;
 }
 .stack .card:nth-child(3) {
-    margin-top: 6rem;
+    margin-top: 96px;
 }
 .stack .card:nth-child(4) {
-    margin-top: 8rem;
+    margin-top: 128px;
 }
 .stack .card:nth-child(5) {
-    margin-top: 10rem;
+    margin-top: 160px;
 }
 .stack .card:nth-child(6) {
-    margin-top: 12rem;
+    margin-top: 192px;
 }
 .stack .card:nth-child(7) {
-    margin-top: 14rem;
+    margin-top: 224px;
 }
 .stack .card:nth-child(8) {
-    margin-top: 16rem;
+    margin-top: 256px;
 }
 .stack .card:nth-child(9) {
-    margin-top: 18rem;
+    margin-top: 288px;
 }
 .stack .card:nth-child(10) {
-    margin-top: 20rem;
+    margin-top: 320px;
 }
 .stack .card:nth-child(11) {
-    margin-top: 22rem;
+    margin-top: 352px;
 }
 .stack .card:nth-child(12) {
-    margin-top: 24rem;
+    margin-top: 384px;
 }
 .stack .card:nth-child(13) {
-    margin-top: 26rem;
+    margin-top: 416px;
 }
 .stack .card:nth-child(14) {
-    margin-top: 28rem;
+    margin-top: 448px;
 }
 .stack .card:nth-child(15) {
-    margin-top: 30rem;
+    margin-top: 480px;
 }
 .stack .card:nth-child(16) {
-    margin-top: 32rem;
+    margin-top: 512px;
 }
 .stack .card:nth-child(17) {
-    margin-top: 34rem;
+    margin-top: 544px;
 }
 .stack .card:nth-child(18) {
-    margin-top: 36rem;
+    margin-top: 576px;
 }
 .stack .card:nth-child(19) {
-    margin-top: 38rem;
+    margin-top: 608px;
 }
 .stack .card:nth-child(20) {
-    margin-top: 40rem;
+    margin-top: 640px;
 }
