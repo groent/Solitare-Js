@@ -16,21 +16,16 @@ import Deck from './deck.js'
 
 
 /***********************************************************************/
-/*                           GLOBALS CREATION                          */
+/*                               GLOBALS                               */
 /***********************************************************************/
 
-// Solitaire game: arrays for: stockPile, openPile, 7 stacks
+// Solitaire game: arrays for: stockPile, 7 stacks
 const stockPile = new Deck();
-const openPile = new Object();
 const stack = [];
 for (let i=1; i<8; i++) {
     stack[i] = new Object();
     stack[i].cards = [];
 }
-
-const stacks = new Object(); 
-openPile.cards  = [];
-stacks.cards = [];
 
 // grab divs in html to append card divs to
 // const restart = document.getElementById("restart");
@@ -38,8 +33,6 @@ const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
 const bayDivs = document.querySelectorAll(".bay");
-// DEBUG //
-// console.log(stockPileDiv.id)
 
 // map card face value to integer value
 const CARD_VALUE_MAP = {
@@ -82,6 +75,7 @@ var cardDivs = document.querySelectorAll(".card");
 // *****************************************************************
 function startGame() {  // game initialization
 // *****************************************************************
+
     shuffleAndSliceDeck();
     
 } // end of: startGame()
@@ -148,7 +142,9 @@ function createCard(cont, card) {  // given element in array, create card div an
 
 // *****************************************************************
 function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
+// turn any card open that is left behind at the bottom of a stack 
 // *****************************************************************
+
     // determine if card has to be turned
     const notSelCards = cardDivs[0].parentNode.querySelectorAll(":not(.sel)");
 
@@ -172,14 +168,37 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
 
 } // end of: moveCards()
 
+
+// *****************************************************************
+function selSibsBelow(card) {  // select all lower siblings from card on
+// *****************************************************************
+
+    // retrieve all open cards in this stack/pile
+    const stck = card.parentNode.querySelectorAll(":not(.closed)");
+
+    // console.log(stck); // DEBUG //
+
+    // cycle through all siblings, until sel card found
+    // then select all further siblings
+    
+    for(let i=0; i<stck.length; i++) {          // go through all open cards in container
+        if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
+            for(let j=i; j<stck.length; j++) {  // for all further cards in container
+                stck[j].classList.add("sel");   // select card by add sel class to card div
+            }
+            break;                              // no need to check other cards (all are sel)
+        }                                       // break out of for loop (and function)
+    }
+    
+} // end of: selSibsBelow()
+
+
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
 /***********************************************************************/
 
+// *****************************************************************
 // determine drop target types: stackDivs, bayDivs, cardDivs
-function allowDrop(e) {
-    e.preventDefault();
-}
 stackDivs.forEach(el => {
     el.addEventListener('dragover', allowDrop);
 });
@@ -189,8 +208,14 @@ bayDivs.forEach(el => {
 cardDivs.forEach(el => {
     el.addEventListener('dragover', allowDrop);
 });
+function allowDrop(e) {
+
+    e.preventDefault();
+
+}  // end of: allowDrop()
 
 
+// *****************************************************************
 // only single cards can be dragged (simplification)
 cardDivs.forEach(el => {
     el.addEventListener('dragstart', dragStart); 
@@ -201,8 +226,8 @@ cardDivs.forEach(el => {
 function dragStart(e) {
 
     // DEBUG //
-    console.log("drag starts: " + e.target.dataset.value);
-    e.dataTransfer.setData('text', e.target.dataset.value);
+    // console.log("drag starts: " + e.target.dataset.value);
+    // e.dataTransfer.setData('text', e.target.dataset.value);
 
     // deselect all cards
     cardDivs.forEach((el) => el.classList.remove("sel"));
@@ -211,25 +236,12 @@ function dragStart(e) {
     e.target.classList.add("sel");
 
     // if card is child of stack then select any other cards below it as well
-    if (e.target.parentNode.classList.contains("stack")) {
+    if (e.target.parentNode.classList.contains("stack")) selSibsBelow(e.target);
 
-        // retrieve all open cards in this stack
-        const stck = e.target.parentNode.querySelectorAll(":not(.closed)");
+}  // end of: dragStart()
 
-        // cycle through all siblings, until sel card found
-        // then select all further siblings
-        
-        for(let i=0; i<stck.length; i++) {          // go through all open cards in container
-            if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
-                for(let j=i; j<stck.length; j++) {  // for all further cards in container
-                    stck[j].classList.add("sel");   // select card by add sel class to card div
-                }
-                break;                              // no need to check other cards (all are sel)
-            }                                       // break out of for loop
-        }
-    }
-}
 
+// *****************************************************************
 // add event handler for all drop target types: stackDivs, bayDivs, cardDivs 
 stackDivs.forEach(el => {
     el.addEventListener('drop', drop);
@@ -243,23 +255,24 @@ cardDivs.forEach(el => {
 function drop(e) {
     e.preventDefault();
     // DEBUG //
-    let src = e.dataTransfer.getData('text');
-    console.log("dropped: " + src);
-    console.log("dropped on: " + e.target.dataset.value);
+    // let src = e.dataTransfer.getData('text');
+    // console.log("dropped: " + src);
+    // console.log("dropped on: " + e.target.dataset.value);
 
     // perform a click (to prevent coding stuff twice)
     e.target.click();
 
     // ensure all card are deselected
-    document.querySelectorAll(".sel").forEach((el) => el.classList.remove("sel"));
+    cardDivs.forEach((el) => el.classList.remove("sel"));
 
-}
+}  // end of: drop()
 
 
 /***********************************************************************/
 /*                          EVENT LISTENERS                            */
 /***********************************************************************/
 
+// stockPile select:
 // *****************************************************************
 // for Stock Pile add turn card action on click event
 stockPileDiv.addEventListener('click', () => {
@@ -305,7 +318,7 @@ stackDivs.forEach(element => {
         const selCards = document.querySelectorAll(".sel");
 
         // if stack has no children AND there are cardDivs selected AND top card of selected is King
-        if (element.childElementCount < 1 && selCards && selCards[0].dataset.value.substr(1, 2) === "K") {
+        if (element.childElementCount < 1 && selCards && selCards[0].dataset.value.substr(1, 1) === "K") {
 
             // move King to empty stack
             moveCards(selCards, element);
@@ -375,22 +388,8 @@ cardDivs.forEach(element => {
                     // nothing selected; select this card by adding sel class
                     element.classList.add("sel");
 
-                    // retrieve all open cards in this stack/pile
-                    const stck = element.parentNode.querySelectorAll(":not(.closed)");
-
-                    // console.log(stck); // DEBUG //
-
-                    // cycle through all siblings, until sel card found
-                    // then select all further siblings
-                    
-                    for(let i=0; i<stck.length; i++) {          // go through all open cards in container
-                        if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
-                            for(let j=i; j<stck.length; j++) {  // for all further cards in container
-                                stck[j].classList.add("sel");   // select card by add sel class to card div
-                            }
-                            break;                              // no need to check other cards (all are sel)
-                        }                                       // break out of for loop
-                    }
+                    // select any siblings below this card
+                    selSibsBelow(element);
 
                 } else if (element.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
 
@@ -422,6 +421,7 @@ cardDivs.forEach(element => {
 
     }); // end of: onclick for cardDiv
 }); // end of: for all cardDivs
+
 
 // *****************************************************************
 // for each cardDiv; check if card can go to any bay on double click, 
