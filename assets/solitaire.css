@@ -88,23 +88,6 @@ body > div {
     width: 5rem;
 }
 
-/*.draggable {
-    cursor: move;
-}
-
-.draggable.dragging {
-    opacity: .5;
-} */
-
-.selected { /* NOT USED */
-    background-color: yellow;
-    border: 2px solid black;
-}
-
-.unselectable { /* NOT USED */
-    user-select: none;
-    cursor: not-allowed;
-}
 
 /* ************************************************************** */
 /*   CARD DIV CLASSES, DETERMINE BEHAVIOUR AS WELL                */

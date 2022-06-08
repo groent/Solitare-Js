@@ -146,8 +146,9 @@ function createCard(cont, card) {  // given element in array, create card div an
 } // end of: createCard()
 
 
+// *****************************************************************
 function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
-
+// *****************************************************************
     // determine if card has to be turned
     const notSelCards = cardDivs[0].parentNode.querySelectorAll(":not(.sel)");
 
@@ -203,10 +204,13 @@ function dragStart(e) {
     console.log("drag starts: " + e.target.dataset.value);
     e.dataTransfer.setData('text', e.target.dataset.value);
 
+    // deselect all cards
+    cardDivs.forEach((el) => el.classList.remove("sel"));
+
     // select this card
     e.target.classList.add("sel");
 
-    // if card is child of stack then select any other cards below as well
+    // if card is child of stack then select any other cards below it as well
     if (e.target.parentNode.classList.contains("stack")) {
 
         // retrieve all open cards in this stack
@@ -226,20 +230,6 @@ function dragStart(e) {
     }
 }
 
-function drop(e) {
-    e.preventDefault();
-    // DEBUG //
-    var src = e.dataTransfer.getData('text');
-    console.log("dropped: " + src);
-    console.log("dropped on: " + e.target.dataset.value);
-
-    // perform a click (to prevent coding stuff twice)
-    e.target.click();
-
-    // ensure all card are deselected
-    document.querySelectorAll(".sel").forEach((el) => el.classList.remove("sel"));
-
-}
 // add event handler for all drop target types: stackDivs, bayDivs, cardDivs 
 stackDivs.forEach(el => {
     el.addEventListener('drop', drop);
@@ -250,6 +240,20 @@ bayDivs.forEach(el => {
 cardDivs.forEach(el => {
     el.addEventListener('drop', drop);
 });
+function drop(e) {
+    e.preventDefault();
+    // DEBUG //
+    let src = e.dataTransfer.getData('text');
+    console.log("dropped: " + src);
+    console.log("dropped on: " + e.target.dataset.value);
+
+    // perform a click (to prevent coding stuff twice)
+    e.target.click();
+
+    // ensure all card are deselected
+    document.querySelectorAll(".sel").forEach((el) => el.classList.remove("sel"));
+
+}
 
 
 /***********************************************************************/
