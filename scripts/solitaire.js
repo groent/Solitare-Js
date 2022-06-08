@@ -377,10 +377,3 @@ cardDivs.forEach(cel => {
 
 
 
-// game restart
-
-restart.addEventListener('click', () => {
-    // TODO: confirmation pop-up
-    window.location.reload();
-})
-

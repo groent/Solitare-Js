@@ -95,20 +95,20 @@ body > div {
 /* ************************************************************** */
 
 .card {
-    background-color: white;
+    background-image: url("sprites/card-empty.png");
     display: block;
     height: 128px;
     width: 80px;
     position: absolute;
-    outline: 1px solid black;
-    border-radius: 8px;
+    /* outline: 1px solid black; */
+    /* border-radius: 8px; */
 }
 .card.sel {
     outline: 2px solid red;
 }
 
 .card.closed {
-    background: repeating-linear-gradient( -45deg,#fff, #333 1px,#fff 1px);
+    background-image: url("sprites/card-closed.png");
     color: transparent;
 }
 .stack .card {
