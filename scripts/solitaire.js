@@ -33,12 +33,13 @@ openPile.cards  = [];
 stacks.cards = [];
 
 // grab divs in html to append card divs to
-const restart = document.getElementById("restart");
+// const restart = document.getElementById("restart");
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
 const bayDivs = document.querySelectorAll(".bay");
-
+// DEBUG //
+// console.log(stockPileDiv.id)
 
 // map card face value to integer value
 const CARD_VALUE_MAP = {
@@ -134,13 +135,14 @@ function createCard(cont, card) {  // given element in array, create card div an
 // this function is used by shuffleAndSliceDeck() to create a new game in html 
 // *****************************************************************
 
-    let ct = document.getElementById(cont);                         // grab container div
+    let cnt = document.getElementById(cont);                        // grab container div
     let cardDiv = document.createElement('div');                    // create new card div
     cardDiv.classList.add("card", card.color);                      // set card class attributes
     if (card.closed) cardDiv.classList.add("closed");
     cardDiv.innerHTML = `${card.suit}${card.value}`;                // set value text
-    cardDiv.dataset.value = `${card.suit}${card.value}`;            // set value in data-value [OPTIONAL?]
-    ct.appendChild(cardDiv);                                        // place card in container
+    cardDiv.dataset.value = `${card.suit}${card.value}`;            // set value in data-value
+    cardDiv.setAttribute('draggable', true);                        // enable drag action on div
+    cnt.appendChild(cardDiv);                                       // place card in container
 } // end of: createCard()
 
 
@@ -162,12 +164,92 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
         el.classList.remove("sel");
     });
 
-    // check if win condition was met and give feedback
+    // Check for win condition and provide feedback
     if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
         document.getElementsByTagName('h1')[0].style.display = 'block';
     }
 
 } // end of: moveCards()
+
+/***********************************************************************/
+/*                          DRAG 'N' DROP                              */
+/***********************************************************************/
+
+// determine drop target types: stackDivs, bayDivs, cardDivs
+function allowDrop(e) {
+    e.preventDefault();
+}
+stackDivs.forEach(el => {
+    el.addEventListener('dragover', allowDrop);
+});
+bayDivs.forEach(el => {
+    el.addEventListener('dragover', allowDrop);
+});
+cardDivs.forEach(el => {
+    el.addEventListener('dragover', allowDrop);
+});
+
+
+// only single cards can be dragged (simplification)
+cardDivs.forEach(el => {
+    el.addEventListener('dragstart', dragStart); 
+});
+// on start; copy over the data-value of the card to be dragged (not used)
+// on start; select the card and any below it (in stack only)
+// now we can use the same functionality on drop as with the (second) click
+function dragStart(e) {
+
+    // DEBUG //
+    console.log("drag starts: " + e.target.dataset.value);
+    e.dataTransfer.setData('text', e.target.dataset.value);
+
+    // select this card
+    e.target.classList.add("sel");
+
+    // if card is child of stack then select any other cards below as well
+    if (e.target.parentNode.classList.contains("stack")) {
+
+        // retrieve all open cards in this stack
+        const stck = e.target.parentNode.querySelectorAll(":not(.closed)");
+
+        // cycle through all siblings, until sel card found
+        // then select all further siblings
+        
+        for(let i=0; i<stck.length; i++) {          // go through all open cards in container
+            if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
+                for(let j=i; j<stck.length; j++) {  // for all further cards in container
+                    stck[j].classList.add("sel");   // select card by add sel class to card div
+                }
+                break;                              // no need to check other cards (all are sel)
+            }                                       // break out of for loop
+        }
+    }
+}
+
+function drop(e) {
+    e.preventDefault();
+    // DEBUG //
+    var src = e.dataTransfer.getData('text');
+    console.log("dropped: " + src);
+    console.log("dropped on: " + e.target.dataset.value);
+
+    // perform a click (to prevent coding stuff twice)
+    e.target.click();
+
+    // ensure all card are deselected
+    document.querySelectorAll(".sel").forEach((el) => el.classList.remove("sel"));
+
+}
+// add event handler for all drop target types: stackDivs, bayDivs, cardDivs 
+stackDivs.forEach(el => {
+    el.addEventListener('drop', drop);
+});
+bayDivs.forEach(el => {
+    el.addEventListener('drop', drop);
+});
+cardDivs.forEach(el => {
+    el.addEventListener('drop', drop);
+});
 
 
 /***********************************************************************/
@@ -337,10 +419,9 @@ cardDivs.forEach(element => {
     }); // end of: onclick for cardDiv
 }); // end of: for all cardDivs
 
-
 // *****************************************************************
 // for each cardDiv; check if card can go to any bay on double click, 
-// move card if allowed    
+// move card if allowed       
 cardDivs.forEach(cel => {
     cel.addEventListener('dblclick', () => {
 // *****************************************************************
@@ -348,39 +429,31 @@ cardDivs.forEach(cel => {
 
         // check all 4 bays for correct suit and value
         bayDivs.forEach(bel => {
+            // DEBUG //
+            console.log("bay " + bel.dataset.value.substr(0,1) + ": " + bel.dataset.value.substr(1, 2));
+
+            // for each bay: if card suit matches and card value is one more than bay
             if (cel.dataset.value.substr(0, 1) == bel.dataset.value.substr(0, 1) && 
                 CARD_VALUE_MAP[cel.dataset.value.substr(1, 2)] == CARD_VALUE_MAP[bel.dataset.value.substr(1, 2)] + 1) {
-                // DEBUG // console.log("Card can be moved: " + cel.dataset.value);
-                
+                    
                 // replace bay data-value with card data-value
                 bel.dataset.value = cel.dataset.value;
-                
-                // pass cel to an array
-                const cards = [];
-                cards.push(cel);
 
-                // add sel class to this card
-                // this card will be deselected later on
-                // ensure closed card is working properly
+                // select this card by adding sel class
+                // this card will be deslected later on, 
+                // but it is important to determine any card that need to be turned
                 cel.classList.add("sel");
+
+                // in order to use moveCards() the cel needs to be pushed into array
+                const cards =[];
+                cards.push(cel);
 
                 // append selected card to bay
                 moveCards(cards, bel);
 
+            } // end if card belongs on bay
 
-            } 
         });
 
-    }); // end of: onDblClick for cardDiv
+    }); // end of: ondblclick for cardDiv
 }); // end of: for all cardDivs
-
-
-
-
-// game restart
-
-restart.addEventListener('click', () => {
-    // TODO: confirmation pop-up
-    window.location.reload();
-})
-
