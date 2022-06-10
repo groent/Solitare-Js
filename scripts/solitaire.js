@@ -283,11 +283,14 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 
                 // determine the new value for the bay from moved cardDiv (do minus 1)
                 const val = CARD_VALUE_MAP[trgtCont.lastChild.dataset.value.substr(1, 2)] - 1;
+                let key = "";
 
-                // reverse map the value to the key, flatten the array to a string, and remove all commas
-                const key = Object.entries(CARD_VALUE_MAP).map(([k,v]) => {
-                    if(v == val) return k;
-                }).toString().replace(/,/g, '');
+                // reverse map the value to the key
+                Object.entries(CARD_VALUE_MAP).map(([k,v]) => {
+
+                    // if correct value found, copy over the associated key
+                    if(v == val) key = k;
+                });
                 
                 // replace the data-value attribute of the bay
                 srcCont.dataset.value = trgtCont.lastChild.dataset.value.substr(0, 1) + key;
