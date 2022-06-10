@@ -180,7 +180,10 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
 
     // Check for win condition and provide feedback
     if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
-        document.getElementsByTagName('h1')[0].style.display = 'block';
+        if ( document.getElementsByTagName('h1')[0].style.display == 'none') {
+            document.getElementsByTagName('h1')[0].style.display = 'block';
+            window.scrollTo(0, 0);
+        }
     }
 
 } // end of: moveCards()
@@ -303,8 +306,10 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
         // Remove the move that was just undone from History
         Hist.pop();  
 
-        // Remove any celebratory message
-        document.getElementsByTagName('h1')[0].style.display = 'none';
+        // Remove any celebratory message, if applicable
+        if (openPileDiv.childNodes.length > 0 || document.querySelectorAll(".closed").length > 0) {
+            document.getElementsByTagName('h1')[0].style.display = 'none';
+        }
 
     } else {  // there is no History entry
 
