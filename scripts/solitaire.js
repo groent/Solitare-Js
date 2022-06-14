@@ -253,7 +253,7 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
         // flip last card in trgtCont if needed (as recorded in move.flip)
         if(Hist[Hist.length - 1].flip) trgtCont.lastChild.classList.add('closed');
 
-        // Special case: turn back the entire stockPile to openPile, and remove 'closed´for all cards
+        // Special case: turn back the entire stockPile to openPile, and remove 'closed' for all cards
         if(srcCont.id == "stockPileDiv") {
 
             // move entire stockPile into openPile (and reverse order)  
@@ -277,8 +277,6 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
             // Special case: if moved card goes back to stockPile it needs to turn into 'closed'
             if(trgtCont.id == "stockPileDiv") {
                 trgtCont.lastChild.classList.add('closed');
-            // } else {
-            //     trgtCont.lastChild.classList.remove('closed'); 
             }
         
             // Special case: if srcCont is bay container: update the data-value
@@ -428,7 +426,7 @@ stockPileDiv.addEventListener('click', () => {
             
         }
         // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move  
-        const turn = {fromCntr: "openPileDiv", closed: false, numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
+        const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
         Hist.push(turn);
 
     } else { // stockPile has children: just draw one card
@@ -440,7 +438,7 @@ stockPileDiv.addEventListener('click', () => {
         openPileDiv.lastChild.classList.remove("closed");
 
         // Store in Hist: draw a cardDiv from stockPile to openPile and turn card
-        const turn = {fromCntr: "stockPileDiv", closed: true, numCrds: 1, toCntr: "openPileDiv", flip: false};
+        const turn = {fromCntr: "stockPileDiv", numCrds: 1, toCntr: "openPileDiv", flip: false};
         Hist.push(turn);
     }
 });
