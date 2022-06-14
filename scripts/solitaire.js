@@ -28,7 +28,6 @@ for (let i=1; i<8; i++) {
 }
 
 // grab divs in html to append card divs to
-// const restart = document.getElementById("restart");
 const stockPileDiv = document.getElementById("stockPileDiv");
 const openPileDiv = document.getElementById("openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
@@ -57,6 +56,9 @@ const SUIT_VALUE_MAP = {
     "♥": "red",
     "♦": "red"
 }
+
+// History array to store all moves
+var Hist = [];
 
 /***********************************************************************/
 /*                         START OF PROGRAM                            */
@@ -111,7 +113,7 @@ stockPile.shuffle(); // 'shuffle()' is defined in deck.js
         }
     }
 
-    // // DEBUG // console.log all the cards with their piles
+    // DEBUG // console.log all the cards with their piles
     // for(let i=1; i<8; i++){
     //     console.log(stack[i].cards);
     // }
@@ -145,15 +147,30 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
 // turn any card open that is left behind at the bottom of a stack 
 // *****************************************************************
 
-    // determine if card has to be turned
+    // determine if card left behind has to be turned
     const notSelCards = cardDivs[0].parentNode.querySelectorAll(":not(.sel)");
+    let flip = false;
 
     if (notSelCards && notSelCards.length > 0) { 
 
         // if there are cards that will be left behind in the stack or the open pile
+        // grab the last card
+        let btm =  notSelCards[notSelCards.length-1];
+
+        // flip stores closed state of last card
+        flip = btm.classList.contains("closed");
+
         // make sure bottom card is opened (not with .closed)
-        notSelCards[notSelCards.length-1].classList.remove("closed");
+        btm.classList.remove("closed");
     }
+
+    // store all movements in move array
+    let move = new Move(cardDivs, trgtCont.id, flip);   // create Move object for all cards
+
+    // store move in Hist
+    Hist.push(move);
+
+    // DEBUG // console.log(move); 
 
     // forEach cardDivs move and deselect card
     cardDivs.forEach((el) => {
@@ -163,7 +180,10 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
 
     // Check for win condition and provide feedback
     if (openPileDiv.childNodes.length == 0 && document.querySelectorAll(".closed").length == 0) {
-        document.getElementsByTagName('h1')[0].style.display = 'block';
+        if ( document.getElementsByTagName('h1')[0].style.display == 'none') {
+            document.getElementsByTagName('h1')[0].style.display = 'block';
+            window.scrollTo(0, 0);
+        }
     }
 
 } // end of: moveCards()
@@ -176,7 +196,7 @@ function selSibsBelow(card) {  // select all lower siblings from card on
     // retrieve all open cards in this stack/pile
     const stck = card.parentNode.querySelectorAll(":not(.closed)");
 
-    // console.log(stck); // DEBUG //
+    // DEBUG // console.log(stck); 
 
     // cycle through all siblings, until sel card found
     // then select all further siblings
@@ -192,6 +212,110 @@ function selSibsBelow(card) {  // select all lower siblings from card on
     
 } // end of: selSibsBelow()
 
+
+// *****************************************************************
+function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
+// a Move consists of a source (fromCntr) and a destination container (toCntr)
+// Need to store as well: 
+//  - how many cards where moved at once (numCrds) 
+//  - whether the bottom card in the left-behind stack/pile needed to be flipped 
+//
+// No need to keep identicification of the cardDiv, since it is always the bottom one.
+// No need to store whether card is open or closed. This can be derived from context.
+// For each player turn one Move is created and needs to get appended to Hist array.
+// *****************************************************************
+    this.fromCntr = cardDivs[0].parentNode.id;
+    // this.closed = cardDivs[0].classList.contains("closed");
+    this.numCrds = cardDivs.length;
+    this.toCntr = trgtCntrId;
+    this.flip = Flipped;
+}
+
+
+// *****************************************************************
+document.getElementById('undoBtn').addEventListener("click", function() {  // Undo button click handler
+// Check Hist global var
+// Use final entry to undo that user turn
+// *****************************************************************
+
+    // if a user turn has been recorded
+    if(Hist.length > 0) {
+
+        // DEBUG // console.log("undo from: " + Hist[Hist.length - 1].toCntr + ", to: " + Hist[Hist.length - 1].fromCntr);
+
+        // collect target and source containers from their ids
+        const trgtCont = document.getElementById(Hist[Hist.length - 1].fromCntr);
+        const srcCont = document.getElementById(Hist[Hist.length - 1].toCntr);
+
+        // record position in the source container for the 1st (maybe only) cardDiv to be moved back
+        const srcLngth = srcCont.childNodes.length - Hist[Hist.length - 1].numCrds;
+
+        // flip last card in trgtCont if needed (as recorded in move.flip)
+        if(Hist[Hist.length - 1].flip) trgtCont.lastChild.classList.add('closed');
+
+        // Special case: turn back the entire stockPile to openPile, and remove 'closed' for all cards
+        if(srcCont.id == "stockPileDiv") {
+
+            // move entire stockPile into openPile (and reverse order)  
+            for (let i=0; i<Hist[Hist.length - 1].numCrds; i++ ) {
+
+                // flip closed card of stockPile back into the openPile
+                trgtCont.appendChild(srcCont.lastChild);
+
+                // turn cardDiv into "open"
+                trgtCont.lastChild.classList.remove("closed");
+            }
+
+        } else {  // moved cardDiv(s) do not come from stockPile
+
+            // move card(s) back to fromCntr (stack/openPile)
+            for (let i=0; i < Hist[Hist.length - 1].numCrds; i++) {
+
+                trgtCont.appendChild(srcCont.childNodes[srcLngth]);
+            }
+
+            // Special case: if moved card goes back to stockPile it needs to turn into 'closed'
+            if(trgtCont.id == "stockPileDiv") {
+                trgtCont.lastChild.classList.add('closed');
+            }
+        
+            // Special case: if srcCont is bay container: update the data-value
+            if(srcCont.id.startsWith("bay")) {
+
+                // determine the new value for the bay from moved cardDiv (do minus 1)
+                const val = CARD_VALUE_MAP[trgtCont.lastChild.dataset.value.substr(1, 2)] - 1;
+                let key = "";
+
+                // reverse map the value to the key
+                Object.entries(CARD_VALUE_MAP).map(([k,v]) => {
+
+                    // if correct value found, copy over the associated key
+                    if(v == val) key = k;
+                });
+                
+                // replace the data-value attribute of the bay
+                srcCont.dataset.value = trgtCont.lastChild.dataset.value.substr(0, 1) + key;
+
+                // DEBUG // console.log("bay val: " + trgtCont.lastChild.dataset.value.substr(0, 1) + key);
+            }
+
+        }
+
+        // Remove the move that was just undone from History
+        Hist.pop();  
+
+        // Remove any celebratory message, if applicable
+        if (openPileDiv.childNodes.length > 0 || document.querySelectorAll(".closed").length > 0) {
+            document.getElementsByTagName('h1')[0].style.display = 'none';
+        }
+
+    } else {  // there is no History entry
+
+        // DEBUG // console.log("no more Hist to undo");
+        alert("You are at the start of the game.");
+    }
+      
+}); // end of: click event on undoBtn
 
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
@@ -253,7 +377,9 @@ cardDivs.forEach(el => {
     el.addEventListener('drop', drop);
 });
 function drop(e) {
+
     e.preventDefault();
+
     // DEBUG //
     // let src = e.dataTransfer.getData('text');
     // console.log("dropped: " + src);
@@ -282,27 +408,38 @@ stockPileDiv.addEventListener('click', () => {
     const selCards = document.querySelectorAll(".sel");
     selCards.forEach((el) => el.classList.remove("sel"));
 
-    // If no card left turn the open pile back to stock pile.
+    // If no card left turn the open pile back to stock pile:
     // reverse order and update attributes
     if (stockPileDiv.childNodes.length == 0) {
 
-        // copy openPile into stockPile
+        // determine the number of cards that need to be turned over
         const numOfCards = openPileDiv.childNodes.length
+
+        // move openPile into stockPile
         for (let i=0; i<numOfCards; i++ ) {
 
+            // flip shown card of openPile back into the stockPile
             stockPileDiv.appendChild(openPileDiv.lastChild);
-            // update attributes of cardDiv
+
+            // flip cardDiv into "closed"
             stockPileDiv.lastChild.classList.add("closed");
             
         }
+        // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move  
+        const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
+        Hist.push(turn);
 
-    } else { // stockPile has children
-        // cardDiv handling:
+    } else { // stockPile has children: just draw one card
+
         // take last element of stockPileDiv and move to openPileDiv
         openPileDiv.appendChild(stockPileDiv.lastChild);
 
         // update attributes of cardDiv
         openPileDiv.lastChild.classList.remove("closed");
+
+        // Store in Hist: draw a cardDiv from stockPile to openPile and turn card
+        const turn = {fromCntr: "stockPileDiv", numCrds: 1, toCntr: "openPileDiv", flip: false};
+        Hist.push(turn);
     }
 });
 
@@ -367,6 +504,7 @@ bayDivs.forEach(element => {
 cardDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
+
         // DEBUG // console.log("Card Clicked: " + element.dataset.value);
 
         // retrieve all selected cards
@@ -390,6 +528,8 @@ cardDivs.forEach(element => {
 
                     // select any siblings below this card
                     selSibsBelow(element);
+
+                    // DEBUG // console.log("# of sel: " + document.querySelectorAll(".sel").length);
 
                 } else if (element.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
 
@@ -429,27 +569,28 @@ cardDivs.forEach(element => {
 cardDivs.forEach(cel => {
     cel.addEventListener('dblclick', () => {
 // *****************************************************************
+
         // DEBUG // console.log("Card Double Clicked: " + cel.dataset.value);
 
         // check all 4 bays for correct suit and value
         bayDivs.forEach(bel => {
-            // DEBUG //
-            console.log("bay " + bel.dataset.value.substr(0,1) + ": " + bel.dataset.value.substr(1, 2));
+
+            // DEBUG // console.log("bay " + bel.dataset.value.substr(0,1) + ": " + bel.dataset.value.substr(1, 2));
 
             // for each bay: if card suit matches and card value is one more than bay
             if (cel.dataset.value.substr(0, 1) == bel.dataset.value.substr(0, 1) && 
                 CARD_VALUE_MAP[cel.dataset.value.substr(1, 2)] == CARD_VALUE_MAP[bel.dataset.value.substr(1, 2)] + 1) {
+
                 // DEBUG // console.log("Card can be moved: " + cel.dataset.value);
                 
                 // replace bay data-value with card data-value
                 bel.dataset.value = cel.dataset.value;
 
-                // select this card by adding sel class
-                // this card will be deslected later on, 
-                // but it is important to determine any card that need to be turned
+                // select this card, in order to determine any card that need to be flipped
+                // this card will be deselected later on
                 cel.classList.add("sel");
 
-                // in order to use moveCards() the cel needs to be pushed into array
+                // in order to use moveCards() the 'cel' needs to be pushed into array
                 const cards =[];
                 cards.push(cel);
 

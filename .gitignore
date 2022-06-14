@@ -110,3 +110,5 @@ workspace.code-workspace
 scripts/Solitare-Js.code-workspace
 Solitare-Js.code-workspace
 .gitignore
+*.~vsd
+*(PG).*
