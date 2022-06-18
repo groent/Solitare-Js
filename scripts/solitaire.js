@@ -50,6 +50,8 @@ const CARD_VALUE_MAP = {
     "Q": 12,
     "K": 13
 }
+const VALUES = ["0", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+
 const SUIT_VALUE_MAP = {
     "♠": "black", 
     "♣": "black",
@@ -97,20 +99,23 @@ stockPile.shuffle(); // 'shuffle()' is defined in deck.js
     for(let i=1; i<8; i++){
         
         // for each card in stack do:
-       for( let j=0; j<i; j++){
+        for( let j=0; j<i; j++){
 
-           // 'draw' one card from stockPile array
-           stack[i].cards.push(stockPile.pop());
+            // 'draw' one card from stockPile array
+            stack[i].cards.push(stockPile.pop());
 
-           // set its container
-           stack[i].cards[j].container=`stack${i}`;
+            // set its container
+            stack[i].cards[j].container=`stack${i}`;
 
-           // if final card of stack, make sure to turn it (to open)
+            // if final card of stack, make sure to turn it (to open)
            if (j == i - 1) stack[i].cards[j].closed = false;
 
-           // create card div, and append it to container
-           createCard(`stack${i}Div`, stack[i].cards[j]);
+            // create card div, and append it to container
+            createCard(`stack${i}Div`, stack[i].cards[j]);
         }
+
+        // make final card in stack draggable
+        stackDivs[i-1].lastChild.setAttribute('draggable', true);
     }
 
     // DEBUG // console.log all the cards with their piles
@@ -137,7 +142,7 @@ function createCard(cont, card) {  // given element in array, create card div an
     if (card.closed) cardDiv.classList.add("closed");
     cardDiv.innerHTML = `${card.suit}${card.value}`;                // set value text
     cardDiv.dataset.value = `${card.suit}${card.value}`;            // set value in data-value
-    cardDiv.setAttribute('draggable', true);                        // enable drag action on div
+    cardDiv.setAttribute('draggable', false);                       // enable drag action on div
     cnt.appendChild(cardDiv);                                       // place card in container
 } // end of: createCard()
 
@@ -160,8 +165,9 @@ function moveCards(cardDivs, trgtCont) { // move array of selected cardDivs to t
         // flip stores closed state of last card
         flip = btm.classList.contains("closed");
 
-        // make sure bottom card is opened (not with .closed)
+        // make sure bottom card is opened (not with .closed) and draggable
         btm.classList.remove("closed");
+        btm.setAttribute('draggable', true);
     }
 
     // store all movements in move array
@@ -251,7 +257,10 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
         const srcLngth = srcCont.childNodes.length - Hist[Hist.length - 1].numCrds;
 
         // flip last card in trgtCont if needed (as recorded in move.flip)
-        if(Hist[Hist.length - 1].flip) trgtCont.lastChild.classList.add('closed');
+        if(Hist[Hist.length - 1].flip) {
+            trgtCont.lastChild.classList.add('closed');
+            trgtCont.lastChild.setAttribute('draggable', false);
+        }
 
         // Special case: turn back the entire stockPile to openPile, and remove 'closed' for all cards
         if(srcCont.id == "stockPileDiv") {
@@ -264,6 +273,8 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 
                 // turn cardDiv into "open"
                 trgtCont.lastChild.classList.remove("closed");
+                trgtCont.lastChild.setAttribute('draggable', true);
+                
             }
 
         } else {  // moved cardDiv(s) do not come from stockPile
@@ -277,22 +288,31 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
             // Special case: if moved card goes back to stockPile it needs to turn into 'closed'
             if(trgtCont.id == "stockPileDiv") {
                 trgtCont.lastChild.classList.add('closed');
+                trgtCont.lastChild.setAttribute('draggable', false);
             }
         
-            // Special case: if srcCont is bay container: update the data-value
+            // Special case: if srcCont is bay container: update the data-value and draggable 
             if(srcCont.id.startsWith("bay")) {
+
+                // make open card draggable again
+                trgtCont.lastChild.setAttribute('draggable', true);
 
                 // determine the new value for the bay from moved cardDiv (do minus 1)
                 const val = CARD_VALUE_MAP[trgtCont.lastChild.dataset.value.substr(1, 2)] - 1;
-                let key = "";
 
                 // reverse map the value to the key
+                let key = "";
                 Object.entries(CARD_VALUE_MAP).map(([k,v]) => {
 
                     // if correct value found, copy over the associated key
                     if(v == val) key = k;
                 });
-                
+
+                // alternative way with simplified array
+                const vl = trgtCont.lastChild.dataset.value.substr(1, 2);
+                let ndx = VALUES.findIndex((el) => el == vl) - 1;
+                key = VALUES[ndx];
+
                 // replace the data-value attribute of the bay
                 srcCont.dataset.value = trgtCont.lastChild.dataset.value.substr(0, 1) + key;
 
@@ -349,9 +369,13 @@ cardDivs.forEach(el => {
 // now we can use the same functionality on drop as with the (second) click
 function dragStart(e) {
 
-    // DEBUG //
-    // console.log("drag starts: " + e.target.dataset.value);
-    // e.dataTransfer.setData('text', e.target.dataset.value);
+    // // DEBUG //
+    // console.log("card is closed: " + e.target.classList.contains("closed"));
+    // console.log("drag starts: " + e.target.parentNode.id);
+
+    // // store relevant information about source; don't drop closed cards or cards from bay
+    // const src = e.target.classList.contains("closed")? "closed" : e.target.parentNode.id;
+    // e.dataTransfer.setData('text', src);
 
     // deselect all cards
     cardDivs.forEach((el) => el.classList.remove("sel"));
@@ -380,16 +404,25 @@ function drop(e) {
 
     e.preventDefault();
 
-    // DEBUG //
-    // let src = e.dataTransfer.getData('text');
-    // console.log("dropped: " + src);
+    // // grab source information from dataTransfer
+    // // text can be: "closed" (for closed card) or id of source container
+    // let srcCont = e.dataTransfer.getData('text');
+
+    // // DEBUG //
+    // console.log("dragged from: " + srcCont);
     // console.log("dropped on: " + e.target.dataset.value);
 
-    // perform a click (to prevent coding stuff twice)
-    e.target.click();
+    // // if this card is open AND this card is NOT in bay; then it is selectable
+    // if (srcCont != "closed" && !srcCont.startsWith("bay")) {
 
-    // ensure all card are deselected
-    cardDivs.forEach((el) => el.classList.remove("sel"));
+
+        // perform a click (to prevent coding stuff twice)
+        e.target.click();
+
+        // ensure all card are deselected
+        cardDivs.forEach((el) => el.classList.remove("sel"));
+
+    // } // end of: if selectable
 
 }  // end of: drop()
 
@@ -421,9 +454,9 @@ stockPileDiv.addEventListener('click', () => {
             // flip shown card of openPile back into the stockPile
             stockPileDiv.appendChild(openPileDiv.lastChild);
 
-            // flip cardDiv into "closed"
+            // flip cardDiv into "closed" and undraggable
             stockPileDiv.lastChild.classList.add("closed");
-            
+            stockPileDiv.lastChild.setAttribute('draggable', false);
         }
         // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move  
         const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
@@ -436,6 +469,7 @@ stockPileDiv.addEventListener('click', () => {
 
         // update attributes of cardDiv
         openPileDiv.lastChild.classList.remove("closed");
+        openPileDiv.lastChild.setAttribute('draggable', true);
 
         // Store in Hist: draw a cardDiv from stockPile to openPile and turn card
         const turn = {fromCntr: "stockPileDiv", numCrds: 1, toCntr: "openPileDiv", flip: false};
@@ -488,6 +522,9 @@ bayDivs.forEach(element => {
 
             // append selected card to bay
             moveCards(selCards, element);
+
+            // make card undraggable
+            element.lastChild.setAttribute('draggable', false);
 
         } else { // move is not allowed
             // deselect all selected cards
@@ -596,6 +633,9 @@ cardDivs.forEach(cel => {
 
                 // append selected card to bay
                 moveCards(cards, bel);
+
+                // make card undraggable
+                bel.lastChild.setAttribute('draggable', false);
 
             } // end if card belongs on bay
 
