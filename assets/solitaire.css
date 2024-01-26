@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: sans-serif;
-    font-size: 24px;
+    font-size: 1.5rem;
 }
 
 h1 {
@@ -39,7 +39,11 @@ h1 {
 }
 
 button {
-    margin: 16px;
+    margin: 0 .5rem;
+}
+
+#genBtn, #winBtn {
+    display: none;
 }
 
 /* Card suits */
@@ -61,31 +65,28 @@ body > div {
 }
 
 .container {
-    margin: 16px;
+    margin: 1rem;
     height: 100%;
-    min-height: 128px;
-    min-width: 80px;
+    min-height: 6.5rem;
+    width: 4rem;
     position: relative;
-    display: block;
+    display: flex;
     float: left;
     justify-content: center;
     text-align: center;
     color: gray;
     border: 1px dashed gray;
-    border-radius: 8px;
+    border-radius: .5rem;
     user-select: none;
 }
 
 .bay {
-    display: flex;
-    height: 128px;
-    width: 80px;
+    height: 6.5rem;
     float: right;
 }
 
 .stack {
-    display: flex;
-    width: 80px;
+    height: 30.5rem;
 }
 
 
@@ -95,79 +96,103 @@ body > div {
 /* ************************************************************** */
 
 .card {
-    background-image: url("sprites/card-empty.png");
-    display: block;
-    height: 128px;
-    width: 80px;
     position: absolute;
-    /* outline: 1px solid black; */
-    /* border-radius: 8px; */
+    display: block;
+    height: 6rem;
+    width: 3.5rem;
+    padding: .25rem;
+    background-color: white;
+    outline: 1px solid black;
+    border-radius: .5rem;
+    font-size: 1rem;
+    line-height: 80%;
+    text-align: left;
+}
+.card span {
+    position: absolute;
+    bottom: .25rem;
+    right: .25rem;
+    transform: rotate(180deg);
 }
 .card.sel {
+outline: 2px solid rgb(2, 214, 133);
+}
+
+.card.nope {
     outline: 2px solid red;
 }
 
+/* .card.test {
+    outline: 2px solid rgb(255, 0, 191);
+} */
+
 .card.closed {
-    background-image: url("sprites/card-closed.png");
+    /* background: repeating-linear-gradient( -45deg,#fff, #A33 1px,#fff 2px); */
+    background-image: 
+    linear-gradient(45deg, transparent 40%, #a33 50%, transparent 60%, transparent 100%),
+    linear-gradient(-45deg, transparent 40%, #a33 50%, transparent 60%, transparent 100%);
+    background-size: 6px 6px;
+    background-position: 3px 3px;
+    box-shadow: inset 0 0 0 4px white;
     color: transparent;
 }
-.stack .card {
-    margin-top: 32px;
-}
 .stack .card:nth-child(2) {
-    margin-top: 64px;
+    margin-top: 2rem;
 }
 .stack .card:nth-child(3) {
-    margin-top: 96px;
+    margin-top: 4rem;
 }
 .stack .card:nth-child(4) {
-    margin-top: 128px;
+    margin-top: 6rem;
 }
 .stack .card:nth-child(5) {
-    margin-top: 160px;
+    margin-top: 8rem;
 }
 .stack .card:nth-child(6) {
-    margin-top: 192px;
+    margin-top: 10rem;
 }
 .stack .card:nth-child(7) {
-    margin-top: 224px;
+    margin-top: 12rem;
 }
 .stack .card:nth-child(8) {
-    margin-top: 256px;
+    margin-top: 14rem;
 }
 .stack .card:nth-child(9) {
-    margin-top: 288px;
+    margin-top: 16rem;
 }
 .stack .card:nth-child(10) {
-    margin-top: 320px;
+    margin-top: 18rem;
 }
 .stack .card:nth-child(11) {
-    margin-top: 352px;
+    margin-top: 20rem;
 }
 .stack .card:nth-child(12) {
-    margin-top: 384px;
+    margin-top: 22rem;
 }
 .stack .card:nth-child(13) {
-    margin-top: 416px;
+    margin-top: 24rem;
 }
 .stack .card:nth-child(14) {
-    margin-top: 448px;
+    margin-top: 26rem;
 }
 .stack .card:nth-child(15) {
-    margin-top: 480px;
+    margin-top: 28rem;
 }
 .stack .card:nth-child(16) {
-    margin-top: 512px;
+    margin-top: 30rem;
 }
 .stack .card:nth-child(17) {
-    margin-top: 544px;
+    margin-top: 32rem;
 }
 .stack .card:nth-child(18) {
-    margin-top: 576px;
+    margin-top: 34rem;
 }
 .stack .card:nth-child(19) {
-    margin-top: 608px;
+    margin-top: 36rem;
 }
 .stack .card:nth-child(20) {
-    margin-top: 640px;
+    margin-top: 38rem;
+}
+.stack .card:nth-child(21) {
+    margin-top: 40rem;
 }

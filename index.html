@@ -5,7 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solitaire</title>
-    <link rel="stylesheet" href="../assets/solitaire.css">
+    <link rel="stylesheet" href="assets/solitaire.css">
+    <script src="scripts/solitaire.js" type="module"></script>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 
@@ -13,17 +14,20 @@
     
     <h1 class="linear-wipe">Congratulations! <br />You won.</h1>
 
-    <button onclick="window.location.reload();" accesskey="n">New Game</button>
+    <button id="newBtn" accesskey="n">New Game</button>
+    <button id="rldBtn" accesskey="r">Reload Game</button>
+    <button id="sveBtn" accesskey="s">Save Game</button>
     <button id="undoBtn" accesskey="z">Undo last move</button>
+    <button id="winBtn" accesskey="w">Check for win</button>
 
     <div>
         <div class ="container" id="stockPileDiv"></div>
         <div class ="container" id="openPileDiv"></div>
 
-        <div class="container bay" id="bay♣Div" data-value="♣0">♣ Bay</div>
-        <div class="container bay" id="bay♦Div" data-value="♦0">♦ Bay</div>
-        <div class="container bay" id="bay♥Div" data-value="♥0">♥ Bay</div>
-        <div class="container bay" id="bay♠Div" data-value="♠0">♠ Bay</div>
+        <div class="container bay" id="bay♣Div" data-suit="♣" data-ord="0">♣ Bay</div>
+        <div class="container bay" id="bay♦Div" data-suit="♦" data-ord="0">♦ Bay</div>
+        <div class="container bay" id="bay♥Div" data-suit="♥" data-ord="0">♥ Bay</div>
+        <div class="container bay" id="bay♠Div" data-suit="♠" data-ord="0">♠ Bay</div>
     </div>
 
     <div>
@@ -38,7 +42,5 @@
 
 
     <!-- Our script has to wait for jQuery to load, first plugins -->
-    <script src="../scripts/solitaire.js" type="module"></script>
-    <!-- <script src="../scripts/dragAndDrop.js" type="module"></script> -->
 </body>
 </html>
