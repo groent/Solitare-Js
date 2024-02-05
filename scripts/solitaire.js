@@ -255,6 +255,17 @@ async function rldGame() {  // game reload
     } else {
         console.log("Hist == null"); // DEBUG //
     }
+
+    // Restore history to before the reload, since clicks have been added...
+    Hist = JSON.parse(readCkie("SolHist"));
+
+    // If there was no history, the ReadCkie would set Hist to null
+    if( Hist == null) {
+        Hist = []; // Hist was filled with null pointer
+        console.log("Hist = [], after reload"); // DEBUG //
+    }
+    console.log("reload successful; history length:" + Hist.length); // DEBUG //
+    
 } // end of: rldGame()
     
 // *****************************************************************
@@ -550,14 +561,6 @@ document.querySelector('#newBtn').addEventListener("click", function() {  // New
 document.querySelector('#rldBtn').addEventListener("click", function() {  // Reload Game button click handler
     // *****************************************************************
     rldGame();
-
-    // Restore history to before the reload, since clicks have been added...
-    Hist = JSON.parse(readCkie("SolHist"));
-
-    // If there was no history, the ReadCkie would set Hist to null
-    if( Hist == null) {
-        Hist = []; // Hist was filled with null pointer
-    }
     
 }); // end of: click event on rldBtn
 
@@ -807,112 +810,3 @@ bayDivs.forEach(element => {
         }
     }); // end of: onclick for bayDiv
 }); // end of: for all bayDivs
-
-
-// // card select:
-// // *****************************************************************
-// // for each cardDiv; toggle select card on click, 
-// // if already other card selected attempt play action       
-// cardDivs.forEach(cel => {
-//     cel.addEventListener('click', () => {
-// // *****************************************************************
-
-//         // DEBUG // console.log("Card Clicked: " + cel.innerText);
-
-//         // retrieve all selected cards
-//         const selCards = document.querySelectorAll(".sel");
-
-//         // if this card is open AND this card is NOT in bay; then it is selectable
-//         if (!cel.classList.contains("closed") && !cel.parentNode.classList.contains("bay")) {
-            
-//             // if this card is selected
-//             if (cel.classList.contains("sel")) {
-
-//                 // deselect all cards
-//                 selCards.forEach((el) => el.classList.remove("sel"));
-
-//             } else { // this card is not selected
-
-//                 if (selCards && selCards.length == 0) {
-
-//                     // nothing selected; select this card by adding sel class
-//                     cel.classList.add("sel");
-
-//                     // select any siblings below this card
-//                     selSibsBelow(cel);
-
-//                     // DEBUG // console.log("# of sel: " + document.querySelectorAll(".sel").length);
-
-//                 } else if (cel.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
-
-//                     // already card(s) selected, this card is target
-//                     // check if move is allowed: alternate suit colour and  the card value is one less
-//                     if (selCards[0].dataset.colour != cel.dataset.colour && 
-//                         parseInt(selCards[0].dataset.ord) == parseInt(cel.dataset.ord) - 1) {
-                       
-//                         // this card is target, move cardDiv(s) from source to target container
-//                         moveCards(selCards, cel.parentNode);
-                        
-//                     } else {    // move conditions have not been satisfied
-
-//                         // DEBUG // console.log("this move is not allowed");
-
-//                         // deselect all cards
-//                         selCards.forEach((el) => el.classList.remove("sel"));
-//                     }
-                    
-//                 } else { // try moving card to open pile
-                    
-//                     // DEBUG // console.log("you can't move cards to the open pile")
-
-//                     // deselect all cards
-//                     selCards.forEach((el) => el.classList.remove("sel"));
-//                 }
-//             }
-//         } // end of: this card is open and NOT in bay
-
-//     }); // end of: onclick for cardDiv
-// }); // end of: for all cardDivs
-
-
-// // *****************************************************************
-// // for each cardDiv; check if card can go to any bay on double click, 
-// // move card if allowed
-// cardDivs.forEach(cel => {
-//     cel.addEventListener('dblclick', () => {
-// // *****************************************************************
-
-//         // DEBUG // console.log("Card Double Clicked: " + cel.innerText);
-
-//         // check all 4 bays for correct suit and value
-//         bayDivs.forEach(bel => {
-
-//             // for each bay: if card suit matches and card value is one more than bay
-//             if (cel.dataset.suit == bel.dataset.suit && 
-//                 parseInt(cel.dataset.ord) == parseInt(bel.dataset.ord) + 1) {
-
-//                 // DEBUG // console.log("Card can be moved: " + cel.innerText);
-                
-//                 // replace bay data-value with card data-value
-//                 bel.dataset.ord = cel.dataset.ord;
-
-//                 // select this card, in order to determine any card that need to be flipped
-//                 // this card will be deselected later on
-//                 cel.classList.add("sel");
-
-//                 // in order to use moveCards() the 'cel' needs to be pushed into array
-//                 const cards =[];
-//                 cards.push(cel);
-
-//                 // append selected card to bay
-//                 moveCards(cards, bel);
-
-//                 // make card undraggable
-//                 bel.lastChild.setAttribute('draggable', false);
-
-//             } // end if card belongs on bay
-
-//         });
-
-//     }); // end of: ondblclick for cardDiv
-// }); // end of: for all cardDivs
