@@ -5,7 +5,8 @@
 /*  JavaScript, and to practise my coding skills                       */
 /*  Plain JS, no use of jQuery                                         */
 /*                                                                     */
-/*  May 2022 - present                                                 */
+/*  May 2022 - August 2022                                             */
+/*  February 2024: bug fixes                                           */
 /*                                                                     */
 /*  Refer to Visio (docs/Solitaire.vsd) for HLD and functional design  */
 /*                                                                     */
@@ -59,8 +60,9 @@ var cardDivs = [];
 /*                         START OF PROGRAM                            */
 /***********************************************************************/
 // Solitair game: only 1 shuffled deck needed
-// Deck is created in 'New Game' or 'Reload Game' 
-// Start of program now only loads the html, 
+// 2024: Deck is created in 'New Game' or 'Reload Game' 
+// Start of program now only loads:
+// - the html, 
 // - the callbacks for the buttons, and 
 // - the handlers of all the containers
 
@@ -70,7 +72,8 @@ var cardDivs = [];
 
 
 // *****************************************************************
-function newGame() {  // create all card divs; shuffle and distribute over stockpile and stacks
+function newGame() {  // game initialization: create stock pile and store in cookie
+// create all card divs; shuffle and distribute over stock pile and stacks
 // *****************************************************************
 
     // Delete all cards and clear any history - remove any previous game
@@ -116,13 +119,8 @@ function newGame() {  // create all card divs; shuffle and distribute over stock
         }
     }
 
-    // DEBUG // console.log all the cards with their piles
-    // for(let i=1; i<8; i++){
-    //     console.log(stack[i].cards);
-    // }
-    // console.log(stockPile.cards);
-
-    // for all the left-over cards in the stockPile array, create div, and append it to container
+    // for all the left-over cards in the stockPile array, 
+    // create div and append it to parent container 
     for(let i=0; i<stockPile.cards.length; i++){
 
         // set colour separately to align with rldGame()
@@ -138,7 +136,8 @@ function newGame() {  // create all card divs; shuffle and distribute over stock
 
 
 // *****************************************************************
-async function rldGame() {  // game reload
+async function rldGame() {  // game reload; read stock pile from cookie
+// create all card divs; shuffle and distribute over stock pile and stacks
 // *****************************************************************
     
     // Delete all cards and clear any history - remove any previous game
@@ -196,11 +195,12 @@ async function rldGame() {  // game reload
         createCard("stockPileDiv", stockPile.cards[i]);
     }
 
-    AddCardHandlers();
+    AddCardHandlers(); // add all handlers for the card divs
 
-    // Is there any History that can be loaded?
+    // attempt to load history array of moves 
     Hist = JSON.parse(readCkie("SolHist"));
     
+    // is there any History that can be loaded?
     if( Hist != null) {
     
         console.log("reload game:"+ Hist.length); // DEBUG // 
@@ -250,13 +250,10 @@ async function rldGame() {  // game reload
                 document.querySelector("#" + Hist[i].toCntr).click();
             }
 
-            // DEBUG // console.log(Hist[i].fromCntr, ":", indx, " to ", Hist[i].toCntr); // DEBUG //
-        }
-    } else {
-        console.log("Hist == null"); // DEBUG //
-    }
+        }  // end of: for all moves
+    }  // end of: History is not null
 
-    // Restore history to before the reload, since clicks have been added...
+    // restore history to before the reload, since clicks have been added...
     Hist = JSON.parse(readCkie("SolHist"));
 
     // If there was no history, the ReadCkie would set Hist to null
@@ -269,7 +266,7 @@ async function rldGame() {  // game reload
 } // end of: rldGame()
     
 // *****************************************************************
-function AddCardHandlers() {  // create all card divs; shuffle and distribute over stockpile and stacks
+function AddCardHandlers() {  // add all handlers on the newly created card divs
 // this function is called in newGame() and rldGame()
 // *****************************************************************
 
@@ -546,8 +543,13 @@ function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
     this.numCrds = cardDivs.length;
     this.toCntr = trgtCntrId;
     this.flip = Flipped;
-    // this.crdVal = cardDivs[0].dataset.value;
 }
+
+
+/***********************************************************************/
+/*                 ON-CLICK HANDLERS FOR BUTTONS                       */
+/***********************************************************************/
+// this section is run during page load
 
 // *****************************************************************
 document.querySelector('#newBtn').addEventListener("click", function() {  // New Game button click handler
@@ -646,7 +648,6 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 
     } else {  // there is no History entry
 
-        // DEBUG // console.log("no more Hist to undo");
         alert("You are at the start of the game.");
     }
       
@@ -655,6 +656,7 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
 /***********************************************************************/
+// this section is run during page load
 
 // *****************************************************************
 // determine drop target types: stackDivs, bayDivs, cardDivs
@@ -714,6 +716,7 @@ function drop(e) {
 /***********************************************************************/
 /*                          EVENT LISTENERS                            */
 /***********************************************************************/
+// this section is run during page load
 
 // stockPile select:
 // *****************************************************************
