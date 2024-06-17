@@ -56,6 +56,10 @@ var Hist = [];
 // All created card divs in newGame(), with their event handlers
 var cardDivs = [];
 
+// Canvas coords for (previously) selected cardDivs in onclick(), used for animation in MoveCards()
+var Coords = {};
+Coords.top = 0, Coords.left = 0;
+
 /***********************************************************************/
 /*                         START OF PROGRAM                            */
 /***********************************************************************/
@@ -327,6 +331,11 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
                         // select any siblings below this card
                         selSibsBelow(cel);
 
+                        // store coords of clicked card for later animation in MoveCards()
+                        Coords.top = Math.round(cel.getBoundingClientRect().top);
+                        Coords.left = Math.round(cel.getBoundingClientRect().left);
+                        // console.log("card ("+ Coords.left +","+ Coords.top +")");  // DEBUG // 
+
                         // DEBUG // console.log("# of sel: " + document.querySelectorAll(".sel").length);
 
                     } else if (cel.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
@@ -452,12 +461,30 @@ function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to tr
     // store move in Hist
     Hist.push(move);
 
-    // DEBUG // console.log(move); 
+    let dx = 0, dy = 0;
 
     // forEach mveDivs move and deselect card
     mveDivs.forEach((el) => {
         trgtCont.appendChild(el);
         el.classList.remove("sel");
+
+        // check coords and setup transition by comparing coords with Coords from selection click
+        dx = el.getBoundingClientRect().left - Coords.left; 
+        dy = el.getBoundingClientRect().top - Coords.top;
+        // DEBUG // console.log("card now ("+ Math.round(el.getBoundingClientRect().left) +","+ Math.round(el.getBoundingClientRect().top) +")");  // DEBUG // 
+        el.classList.add("anim");    // card will be moved on top of all other cards
+
+        // move card back (instantly) to original position
+        el.style.left = -dx + "px";  
+        el.style.top = -dy + "px";
+
+        // perform animation over .5s
+        el.style.cssText += `transition: transform 0.5s ease; transform: translate(${dx}px, ${dy}px);`;
+
+        // wait for it to finish, then remove all obsolete styling and remove anim class
+        // this could cause a race condition, but I wasn't able to force it...
+        setTimeout(() => { el.style.cssText = ""; el.classList.remove("anim");}, [500]);
+
     });
 
     // Check for win condition and provide feedback

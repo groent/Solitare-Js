@@ -122,6 +122,10 @@ outline: 2px solid rgb(2, 214, 133);
     outline: 2px solid red;
 }
 
+.card.anim {
+    z-index: 10;
+}
+
 /* .card.test {
     outline: 2px solid rgb(255, 0, 191);
 } */
