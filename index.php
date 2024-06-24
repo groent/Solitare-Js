@@ -1,3 +1,12 @@
+<?php
+// switch on minify for remote servers
+if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // default SSL port number OR http: port number
+{
+    $min_url = ".min";
+} else {
+    $min_url = "";
+} 
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,8 +14,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Solitaire</title>
-    <link rel="stylesheet" href="assets/solitaire.css">
-    <script src="scripts/solitaire.js" type="module"></script>
+    <link rel="stylesheet" href="./assets/solitaire<?php echo $min_url; ?>.css">
+    <script src="./scripts/solitaire<?php echo $min_url; ?>.js" type="module"></script>
     <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
 </head>
 
@@ -19,6 +28,7 @@
     <button id="rldBtn" accesskey="r">Reload Game</button>
     <button id="sveBtn" accesskey="s">Save Game</button>
     <button id="undoBtn" accesskey="z">Undo last move</button>
+    <button id="genBtn" accesskey="g">Generate ID</button>
 
     <div>
         <div class ="container" id="stockPileDiv"></div>
@@ -40,7 +50,5 @@
         <div class="container stack" id="stack7Div">7th stack</div>
     </div>
 
-
-    <!-- Our script has to wait for jQuery to load, first plugins -->
 </body>
 </html>

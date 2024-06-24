@@ -1,6 +1,6 @@
 
 // global handle to cancel the axios.get request in pollDie
-export var controller = new AbortController();
+// export var controller = new AbortController();
 
 
 // *****************************************************************
@@ -11,6 +11,29 @@ export function sleep(ms) {  // Pause execution for x msec
     // *****************************************************************
     return new Promise(resolve => setTimeout(resolve, ms));
     } // end of: sleep()
+    
+    
+// *****************************************************************
+export function shuffle(len) {  // creates and returns an array of length <len> with 
+    // randomized sequence (index; i)
+    // stack-overflow: Durstenfeld variant of the Fisher–Yates Shuffle algorithm
+    // *****************************************************************
+    
+        let arr = Array.from({length: len}, (v, i) => i);
+      
+        // Go through entire array, from back to front
+        for (let i = arr.length - 1; i > 0; i--) {
+    
+            // j is random number of remaining array section
+            const j = Math.floor(Math.random() * (i + 1));
+    
+            // Swap out ordinal with current position
+            [arr[i], arr[j]] = [arr[j], arr[i]];
+        }
+        // return arr[i's] with 'i' randomized
+        return arr;
+    
+}  // end of: shuffle()
     
     
 // *****************************************************************

@@ -14,15 +14,15 @@
 
 // built on top of deck.js => credits
 import Deck from './deck.js';
-import { readCkie, writeCkie, clearCkie, sleep } from './utils.js';
+import { readCkie, writeCkie, clearCkie, sleep, shuffle } from './utils.min.js';
 
 /***********************************************************************/
 /*                               GLOBALS                               */
 /***********************************************************************/
 
 // grab divs in html to append card divs to
-const stockPileDiv = document.getElementById("stockPileDiv");
-const openPileDiv = document.getElementById("openPileDiv");
+const stockPileDiv = document.querySelector("#stockPileDiv");
+const openPileDiv = document.querySelector("#openPileDiv");
 const stackDivs = document.querySelectorAll(".stack");
 const bayDivs = document.querySelectorAll(".bay");
 
@@ -43,6 +43,11 @@ const CARD_VALUE_MAP = {
     "Q": 12,
     "K": 13
 }
+// face values of cards (with '0'to match CARD_VALUE_MAP)
+const CARD_VALUES = ["0", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K"];
+// suits of cards
+const CARD_SUITS = ["♠","♥","♦","♣"];
+// map suit to colour
 const SUIT_VALUE_MAP = {
     "♠": "black", 
     "♣": "black",
@@ -63,7 +68,7 @@ Coords.top = 0, Coords.left = 0;
 /***********************************************************************/
 /*                         START OF PROGRAM                            */
 /***********************************************************************/
-// Solitair game: only 1 shuffled deck needed
+// Solitaire game: only 1 shuffled deck needed
 // 2024: Deck is created in 'New Game' or 'Reload Game' 
 // Start of program now only loads:
 // - the html, 
@@ -84,12 +89,26 @@ function newGame() {  // game initialization: create stock pile and store in coo
     cardDivs.forEach((el) => el.parentNode.removeChild(el));
     bayDivs.forEach((el) => el.dataset.ord = 0);
     clearCkie("SolHist");
-    document.getElementsByTagName('h1')[0].style.display = 'none';
+    document.querySelector('h1').style.display = 'none';
+    document.querySelector('#winBtn').style.display = 'none';
     Hist = [];
 
-    // Create a new deck of cards and shuffle
-    let stockPile = new Deck();
-    stockPile.shuffle(); // 'shuffle()' is defined in deck.js
+    // Create a new shuffled deck of cards
+    let ord = shuffle(52);
+    let cards = new Array(52);
+
+    for (let i=0; i<52; i++){
+        cards[i] = {};
+        cards[i].container = "stockPile";
+        cards[i].selected = false;
+        cards[i].value = CARD_VALUES[ ord[i]%13 + 1 ];      // ord(0..51)%[0 - 12] -> [1 - 13]
+        cards[i].suit = CARD_SUITS[Math.floor(ord[i]/13)];  // [0 - 3]
+        cards[i].colour = SUIT_VALUE_MAP[cards[i].suit];
+    }
+
+    let stockPile = {};
+    stockPile.cards = [];
+    stockPile.cards = cards;
 
     // store the order of cards in localStorage
     writeCkie("SolDeck", JSON.stringify(stockPile));
@@ -100,6 +119,7 @@ function newGame() {  // game initialization: create stock pile and store in coo
     // - overload each card object with 'container' (parent pile)
 
     let card = {};
+    let num = 0;
 
     for(let i=1; i<8; i++){
         
@@ -107,13 +127,10 @@ function newGame() {  // game initialization: create stock pile and store in coo
        for( let j=0; j<i; j++){
 
             // 'draw' one card from stockPile array
-            card = stockPile.pop();
+            card = stockPile.cards.shift();
 
             // set its container
             card.container=`stack${i}`;
-
-            // set colour separately to align with rldGame()
-            card.colour = SUIT_VALUE_MAP[card.suit];
 
             // create card div, and append it to container
             createCard(`stack${i}Div`, card);
@@ -147,7 +164,8 @@ async function rldGame() {  // game reload; read stock pile from cookie
     // Delete all cards and clear any history - remove any previous game
     cardDivs.forEach((el) => el.parentNode.removeChild(el));
     bayDivs.forEach((el) => el.dataset.ord = 0);
-    document.getElementsByTagName('h1')[0].style.display = 'none';
+    document.querySelector('h1').style.display = 'none';
+    document.querySelector('#winBtn').style.display = 'none';
 
     // Reload old shuffled deck
     let stockPile = JSON.parse(readCkie("SolDeck"));
@@ -179,7 +197,7 @@ async function rldGame() {  // game reload; read stock pile from cookie
             card.container=`stack${i}`;
 
             // set colour separately to align with rldGame()
-            card.colour = SUIT_VALUE_MAP[card.suit];
+            // card.colour = SUIT_VALUE_MAP[card.suit];
 
             // create card div, and append it to container
             createCard(`stack${i}Div`, card);
@@ -193,7 +211,7 @@ async function rldGame() {  // game reload; read stock pile from cookie
     for(let i=0; i<stockPile.cards.length; i++){
 
         // set colour separately to align with rldGame()
-        stockPile.cards[i].colour = SUIT_VALUE_MAP[stockPile.cards[i].suit];
+        // stockPile.cards[i].colour = SUIT_VALUE_MAP[stockPile.cards[i].suit];
 
         // create card div, and append it to container
         createCard("stockPileDiv", stockPile.cards[i]);
@@ -489,8 +507,9 @@ function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to tr
 
     // Check for win condition and provide feedback
     if (winCond()) {
-        if ( document.getElementsByTagName('h1')[0].style.display != 'block') {
-            document.getElementsByTagName('h1')[0].style.display = 'block';
+        if ( document.querySelector('h1').style.display != 'block') {
+            document.querySelector('h1').style.display = 'block';
+            document.querySelector('#winBtn').style.display = 'block';
             window.scrollTo(0, 0);
         }
     }
@@ -523,12 +542,8 @@ function winCond() {  // will return false when not all stacks are properly sort
     });  // end of: for each stack
 
     return !notYet; // not not yet, meaning: win? yes: true, no: false
-}
 
-document.querySelector('#winBtn').addEventListener("click", function() {  // Win button click handler
-    const msg = winCond()? "you're a winner":"the game is not over yet";
-    alert(msg);
-});
+}  // end of: winCond()
     
 
 // *****************************************************************
@@ -562,7 +577,7 @@ function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
 //  - how many cards where moved at once (numCrds) 
 //  - whether the bottom card in the left-behind stack/pile needed to be flipped 
 //
-// No need to keep identicification of the cardDiv, since it is always the bottom one.
+// No need to keep identification of the cardDiv, since it is always the bottom one.
 // No need to store whether card is open or closed. This can be derived from context.
 // For each player turn one Move is created and needs to get appended to Hist array.
 // *****************************************************************
@@ -570,7 +585,96 @@ function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
     this.numCrds = cardDivs.length;
     this.toCntr = trgtCntrId;
     this.flip = Flipped;
-}
+
+}  // end of: Move()
+
+
+// *****************************************************************
+// Globals that are used in winSequence()
+var Dir = 1;     // direction of animation (left/right)
+var Zndx = 1;    // z-index is upped for each bouncing animation
+
+
+// *****************************************************************
+async function winSequence(card) {  // Completes a bouncing sequence for a single card
+// Creates many cloned divs of a single card (pref. in one of the bays)
+//
+// To be used during the MS-like card bouncing celebration
+// Uses Global vars above to ensure each new card sequence displays on top of all previous ones
+// *****************************************************************
+
+// reset of variables inside function
+    let i = 1;                                      // counter for x-axis (always increments)
+    let j = 0;                                      // counter for y-axis (first increments, then decreases)
+    let dy = .5;                                    // delta y (height)
+    let dx = 2;                                     // delta x (left/right)
+    let jmax = 1;                                   // count of bounce down
+    let f = x => .5 * x * x;                        // function: f(x) = .5 x^2
+    let rndm = Math.floor(Math.random() * 30) - 14; // random start on function x= -15 <=> 15
+    let vo = -f(rndm);                              // vertical offset, enter rndm into function 
+    Dir *= -1;                                      // switch direction from previous bounce series
+
+    // L = left of bay
+    // R = total width minus right of bay 
+    // H = total height minus minus card height
+    const L = card.parentNode.getBoundingClientRect().right;
+    const R = window.innerWidth - card.parentNode.getBoundingClientRect().right;
+    const H = window.innerHeight - card.parentNode.getBoundingClientRect().height; 
+
+    var createAniCard = function(i, j) {  // function only used inside the Win Sequence
+
+        return new Promise(function(resolve, reject) {
+
+            // create clone, assign 'anim' class
+            const clone = card.cloneNode(true);
+            clone.classList.add("anim");
+            clone.style.zIndex = Zndx;
+
+            // append clone to bay (so same node level as cloned card)
+            card.parentNode.appendChild(clone);
+
+            // offset clone to card
+            dy = f(j) + vo;   // function: f(x) = .5 x^2 + offset   // value gets passed out
+            dx = 2*i;                                               // value gets passed out
+            clone.style.top =  dy + "px";
+            clone.style.left = Dir * dx + "px";
+
+            resolve(dx, dy);
+        });
+    }
+
+    // ** start of actual function **
+
+
+    // keep bouncing until clone is off the page
+    while ( dy < H && ((Dir<0 && dx<L) || (Dir>0 && dx<R)) ) {
+
+        // console.log("vert offset on bounce down: " + vo); // DEBUG //
+        j = rndm; // vertically bounce starts over every time at same point in function
+
+        // bounce down
+        while ( dy < H && ((Dir<0 && dx<L) || (Dir>0 && dx<R)) ) {
+
+            createAniCard(i, j).then(await sleep(3));
+            i++; j++;
+        } // end of: while bottom border not reached
+
+        // bounce up to lesser height: 90% from previous
+        // dx (i) keeps growing in one direction, dy (j) goes up and down
+
+        vo += .1 * dy; // vertical offset delta is 10%
+        jmax = parseInt(.9 * (j-1)); // bounce back = 90% of original
+        vo = dy - (.5 * jmax * jmax);
+
+        for (let j = jmax; j>-rndm; j--) {
+            createAniCard(i, j).then(await sleep(3));
+            i++;
+        }
+    } // end of: while left/right border not reached
+
+    Zndx++; // next time winSequence() is called the divs will be placed on top
+
+}  // end of: winSequence()
 
 
 /***********************************************************************/
@@ -578,9 +682,42 @@ function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
 /***********************************************************************/
 // this section is run during page load
 
+
+// *****************************************************************
+document.querySelector('#winBtn').addEventListener("click", async function() {  // Win button click handler
+    // Helper functions are located just above this section:
+    // - Global vars definition that are used in:
+    // - async function winSequence(card) = creates a complete bouncing of a single card
+    // - shuffle(array of cards)
+    // *****************************************************************
+    
+    // collect all cards that are candidate for animation; only spades and diamonds
+    let crds = document.querySelectorAll('#bay♠Div .card:not(.anim), #bay♦Div .card:not(.anim)');
+    let arr = shuffle(crds.length);
+    let count = crds.length < 6? crds.length : 6;   // make sure there are enough cards (really only for debugging)
+
+    // pick random card from collection (cannot be a repeat)
+    for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
+
+    // collect all cards that are candidate for animation; only hearts and clubs
+    crds = document.querySelectorAll('#bay♥Div .card:not(.anim), #bay♣Div .card:not(.anim)');
+    arr = shuffle(crds.length);
+    count = crds.length < 4? crds.length : 4;
+    for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
+
+    document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn")); 
+
+});  // end of: click event on winBtn
+    
+    
+    
 // *****************************************************************
 document.querySelector('#newBtn').addEventListener("click", function() {  // New Game button click handler
-    // *****************************************************************
+// *****************************************************************
+
+    // in case the win sequence has been shown
+    document.querySelectorAll(".card.anim").forEach((el) => el.remove());
+
     newGame();
 
 }); // end of: click event on newBtn
@@ -588,15 +725,23 @@ document.querySelector('#newBtn').addEventListener("click", function() {  // New
 
 // *****************************************************************
 document.querySelector('#rldBtn').addEventListener("click", function() {  // Reload Game button click handler
-    // *****************************************************************
+// *****************************************************************
+
+    // in case the win sequence has been shown
+    document.querySelectorAll(".card.anim").forEach((el) => el.remove());
+
     rldGame();
-    
+
 }); // end of: click event on rldBtn
 
 
 // *****************************************************************
 document.querySelector('#sveBtn').addEventListener("click", function() {  // Save Game button click handler
-    // *****************************************************************
+// *****************************************************************
+
+    // in case the win sequence has been shown
+    document.querySelectorAll(".card.anim").forEach((el) => el.remove());
+
     console.log("history length:" + Hist.length);
     if ( Hist.length == 0 ) {
         alert("Cannot save any progress. Try reloading game first.");
@@ -613,8 +758,11 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 // Use final entry to undo that user turn
 // *****************************************************************
 
+    // in case the win sequence has been shown
+    document.querySelectorAll(".card.anim").forEach((el) => el.remove());
+
     // if a user turn has been recorded
-    if(Hist.length > 0) {
+    if (Hist && Hist.length > 0) {
 
         // DEBUG // console.log("undo from: " + Hist[Hist.length - 1].toCntr + ", to: " + Hist[Hist.length - 1].fromCntr);
 
@@ -670,7 +818,8 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
 
         // Remove any celebratory message, if applicable
         if (!winCond()) {
-            document.getElementsByTagName('h1')[0].style.display = 'none';
+            document.querySelector('h1').style.display = 'none';
+            document.querySelector('#winBtn').style.display = 'none';
         }
 
     } else {  // there is no History entry
@@ -679,6 +828,7 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
     }
       
 }); // end of: click event on undoBtn
+
 
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
