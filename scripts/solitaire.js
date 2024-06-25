@@ -13,7 +13,6 @@
 /***********************************************************************/
 
 // built on top of deck.js => credits
-import Deck from './deck.js';
 import { readCkie, writeCkie, clearCkie, sleep, shuffle } from './utils.min.js';
 
 /***********************************************************************/
@@ -690,6 +689,8 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     // - async function winSequence(card) = creates a complete bouncing of a single card
     // - shuffle(array of cards)
     // *****************************************************************
+    // disable button against accidental double click
+    this.disabled = true;
     
     // collect all cards that are candidate for animation; only spades and diamonds
     let crds = document.querySelectorAll('#bay♠Div .card:not(.anim), #bay♦Div .card:not(.anim)');
@@ -706,6 +707,9 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
 
     document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn")); 
+
+    // re-enable celebrate button
+    this.disabled = false;
 
 });  // end of: click event on winBtn
     
