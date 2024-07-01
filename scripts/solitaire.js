@@ -606,10 +606,11 @@ async function winSequence(card) {  // Completes a bouncing sequence for a singl
     let i = 1;                                      // counter for x-axis (always increments)
     let j = 0;                                      // counter for y-axis (first increments, then decreases)
     let dy = .5;                                    // delta y (height)
-    let dx = 2;                                     // delta x (left/right)
+    let xincr = Math.floor(Math.random() *3 )*2 + 2;// random but consistent incremental steps: 2, 4, or 6 pixels
+    let dx = xincr;                                 // delta x (left/right) 
     let jmax = 1;                                   // count of bounce down
     let f = x => .5 * x * x;                        // function: f(x) = .5 x^2
-    let rndm = Math.floor(Math.random() * 30) - 14; // random start on function x= -15 <=> 15
+    let rndm = Math.floor(Math.random() * 50) - 30; // random start on function x= -30 <=> 20
     let vo = -f(rndm);                              // vertical offset, enter rndm into function 
     Dir *= -1;                                      // switch direction from previous bounce series
 
@@ -618,7 +619,7 @@ async function winSequence(card) {  // Completes a bouncing sequence for a singl
     // H = total height minus minus card height
     const L = card.parentNode.getBoundingClientRect().right;
     const R = window.innerWidth - card.parentNode.getBoundingClientRect().right;
-    const H = window.innerHeight - card.parentNode.getBoundingClientRect().height; 
+    const H = window.innerHeight - card.parentNode.getBoundingClientRect().bottom; 
 
     var createAniCard = function(i, j) {  // function only used inside the Win Sequence
 
@@ -634,7 +635,7 @@ async function winSequence(card) {  // Completes a bouncing sequence for a singl
 
             // offset clone to card
             dy = f(j) + vo;   // function: f(x) = .5 x^2 + offset   // value gets passed out
-            dx = 2*i;                                               // value gets passed out
+            dx = xincr*i;                                           // value gets passed out
             clone.style.top =  dy + "px";
             clone.style.left = Dir * dx + "px";
 
@@ -691,7 +692,10 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     // *****************************************************************
     // disable button against accidental double click
     this.disabled = true;
-    
+
+    // in case the win sequence has been shown
+    document.querySelectorAll(".card.anim").forEach((el) => el.remove());
+        
     // collect all cards that are candidate for animation; only spades and diamonds
     let crds = document.querySelectorAll('#bay♠Div .card:not(.anim), #bay♦Div .card:not(.anim)');
     let arr = shuffle(crds.length);
@@ -703,7 +707,7 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     // collect all cards that are candidate for animation; only hearts and clubs
     crds = document.querySelectorAll('#bay♥Div .card:not(.anim), #bay♣Div .card:not(.anim)');
     arr = shuffle(crds.length);
-    count = crds.length < 4? crds.length : 4;
+    count = crds.length < 6? crds.length : 6;
     for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
 
     document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn")); 

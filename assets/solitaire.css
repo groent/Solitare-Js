@@ -4,6 +4,7 @@ body {
     font-family: sans-serif;
     font-size: 1.5rem;
     overflow-x: hidden;
+    background-color: #c4e7cc;
 }
 
 h1 {
@@ -40,6 +41,8 @@ h1 {
 }
 
 button {
+    position: relative;
+    z-index: 100;
     margin: 0 .5rem;
 }
 
@@ -48,11 +51,8 @@ button {
 }
 
 #winBtn {
-    position: absolute;
-    font-size: 2rem;
-    left: 50%;
-    top: 24rem;
-    z-index: 100;
+    font-size: 3vw;
+    margin: 0 auto 1rem;
 }
 
 /* Card suits */
