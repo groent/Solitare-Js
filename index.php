@@ -29,6 +29,7 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
     <button id="sveBtn" accesskey="s">Save Game</button>
     <button id="undoBtn" accesskey="z">Undo last move</button>
     <button id="genBtn" accesskey="g">Generate ID</button>
+    <button id="muteBtn" accesskey="m">♪</button>
 
     <div>
         <div class ="container" id="stockPileDiv"></div>
@@ -49,6 +50,5 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
         <div class="container stack" id="stack6Div">6th stack</div>
         <div class="container stack" id="stack7Div">7th stack</div>
     </div>
-
 </body>
 </html>
