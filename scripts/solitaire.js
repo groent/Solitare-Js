@@ -64,6 +64,12 @@ var cardDivs = [];
 var Coords = {};
 Coords.top = 0, Coords.left = 0;
 
+// Sound player
+const Player  = document.createElement('audio');
+Player.src = './assets/flip.mp3';
+Player.load();
+
+
 /***********************************************************************/
 /*                         START OF PROGRAM                            */
 /***********************************************************************/
@@ -250,17 +256,20 @@ async function rldGame() {  // game reload; read stock pile from cookie
             if( Hist[i].fromCntr == "stockPileDiv" ) {
                 document.querySelector("#" + Hist[i].fromCntr).click();
 
-            // Special case: openPile always only move last child (never recipient)
             } else if( Hist[i].fromCntr == "openPileDiv" ){
-                // wait a bit first
-                await sleep(200);
+
+                // Special case: openPile always only move last child (never recipient)
                 document.querySelector("#" + Hist[i].fromCntr).lastChild.click();
 
-            // standard cases: click on card
-            } else {
-                // wait a bit first
+                // then wait a bit, so the game history is loaded like a fast movie
                 await sleep(200);
+
+            } else {
+                // standard cases: click on card            
                 document.querySelector("#" + Hist[i].fromCntr).childNodes[indx].click();
+
+                // then wait a bit, so the game history is loaded like a fast movie
+                await sleep(200);
             }
 
             // then perform second click on the last card of the target container 
@@ -497,6 +506,7 @@ function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to tr
 
         // perform animation over .5s
         el.style.cssText += `transition: transform 0.5s ease; transform: translate(${dx}px, ${dy}px);`;
+        Player.play();  // sound
 
         // wait for it to finish, then remove all obsolete styling and remove anim class
         // this could cause a race condition, but I wasn't able to force it...
@@ -690,33 +700,78 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     // - async function winSequence(card) = creates a complete bouncing of a single card
     // - shuffle(array of cards)
     // *****************************************************************
-    // disable button against accidental double click
-    this.disabled = true;
+
+    // disable all buttons except for Mute / Unmute, to counter disruptive clicks
+    document.querySelectorAll("button").forEach((el) => el.disabled = true);
+    document.querySelector("#muteBtn").disabled = false;
 
     // in case the win sequence has been shown
     document.querySelectorAll(".card.anim").forEach((el) => el.remove());
-        
+
+    // first pile all cards onto their bays
+    let crds =  document.querySelectorAll('#openPileDiv .card, .container.stack .card');
+
+    // fake a double click
+    let event = new MouseEvent('dblclick', {
+        'view': window,
+        'bubbles': false,
+        'cancelable': true
+    });
+    let len = crds.length;
+
+    // crds is a nodelist, so it cannot be sorted
+    for (let i=0; i<14; i++) {
+        for (let j=0; j<len; j++) {
+            if (crds[j].dataset.ord == i) {
+                crds[j].dispatchEvent(event);
+                await sleep(200);
+            }
+        }
+    }
+    await sleep(500); // for the final double clicks to complete
+
+    // Some of the double click calls may not have finished, 
+    // make sure the crds do not get deleted.
+    crds.forEach(crd => { crd.style.cssText = ""; crd.classList.remove("anim") });
+
+    // Set the player to play shuffle sound
+    Player.src = './assets/shuffle.mp3';
+    Player.load();
+
     // collect all cards that are candidate for animation; only spades and diamonds
-    let crds = document.querySelectorAll('#bay♠Div .card:not(.anim), #bay♦Div .card:not(.anim)');
+    crds = document.querySelectorAll('#bay♠Div .card:not(.anim), #bay♦Div .card:not(.anim)');
     let arr = shuffle(crds.length);
     let count = crds.length < 6? crds.length : 6;   // make sure there are enough cards (really only for debugging)
 
     // pick random card from collection (cannot be a repeat)
-    for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
+    for (let i=0; i<count; i++) { 
+        Player.play(); 
+        await winSequence(crds[arr[i]]); 
+    }
 
     // collect all cards that are candidate for animation; only hearts and clubs
     crds = document.querySelectorAll('#bay♥Div .card:not(.anim), #bay♣Div .card:not(.anim)');
     arr = shuffle(crds.length);
     count = crds.length < 6? crds.length : 6;
-    for (let i=0; i<count; i++) await winSequence(crds[arr[i]]);
 
+    // pick random card from collection (cannot be a repeat)
+    for (let i=0; i<count; i++) { 
+        Player.play(); 
+        await winSequence(crds[arr[i]]); 
+    }
+
+    // Reset the player for usual sound
+    Player.pause();
+    Player.src = './assets/flip.mp3';
+    Player.load();
+
+    // Turn all animated cards around their axis 360degr
     document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn")); 
 
-    // re-enable celebrate button
-    this.disabled = false;
+    // re-enable all buttons again, this will happen during the "turn" animation
+    document.querySelectorAll("button").forEach((el) => el.disabled = false);
 
 });  // end of: click event on winBtn
-    
     
     
 // *****************************************************************
@@ -732,13 +787,19 @@ document.querySelector('#newBtn').addEventListener("click", function() {  // New
 
 
 // *****************************************************************
-document.querySelector('#rldBtn').addEventListener("click", function() {  // Reload Game button click handler
-// *****************************************************************
+document.querySelector('#rldBtn').addEventListener("click", async function() {  // Reload Game button click handler
+    // *****************************************************************
+    // disable all buttons except for Mute / Unmute, to counter disruptive clicks
+    document.querySelectorAll("button").forEach((el) => el.disabled = true);
+    document.querySelector("#muteBtn").disabled = false;
 
     // in case the win sequence has been shown
     document.querySelectorAll(".card.anim").forEach((el) => el.remove());
 
-    rldGame();
+    await rldGame();
+
+    // re-enable all buttons again
+    document.querySelectorAll("button").forEach((el) => el.disabled = false);
 
 }); // end of: click event on rldBtn
 
@@ -761,7 +822,7 @@ document.querySelector('#sveBtn').addEventListener("click", function() {  // Sav
 
 
 // *****************************************************************
-document.getElementById('undoBtn').addEventListener("click", function() {  // Undo button click handler
+document.querySelector('#undoBtn').addEventListener("click", function() {  // Undo button click handler
 // Check Hist global var
 // Use final entry to undo that user turn
 // *****************************************************************
@@ -837,6 +898,18 @@ document.getElementById('undoBtn').addEventListener("click", function() {  // Un
       
 }); // end of: click event on undoBtn
 
+
+// *****************************************************************
+document.querySelector('#muteBtn').addEventListener("click", function() {  // Mute / Unmute button click handler
+// *****************************************************************
+    
+    Player.muted = !Player.muted;
+    this.classList = (this.classList == "off")? "" : "off";
+    Player.play();
+
+});  // end of: click event on muteBtn
+        
+    
 
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */

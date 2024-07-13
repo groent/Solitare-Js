@@ -55,6 +55,13 @@ button {
     margin: 0 auto 1rem;
 }
 
+#muteBtn.off::before {
+    position: absolute;
+    content: "⁄"; /* division mark in font table (char map)*/
+    transform: scale(-1, 1);
+    text-align: center;
+}
+
 /* Card suits */
 .red {
     color: red;
