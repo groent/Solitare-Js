@@ -48,7 +48,7 @@ const CARD_VALUES = ["0", "A", "2", "3", "4", "5", "6", "7", "8", "9", "10", "J"
 const CARD_SUITS = ["♠","♥","♦","♣"];
 // map suit to colour
 const SUIT_VALUE_MAP = {
-    "♠": "black", 
+    "♠": "black",
     "♣": "black",
     "♥": "red",
     "♦": "red"
@@ -74,10 +74,10 @@ Player.load();
 /*                         START OF PROGRAM                            */
 /***********************************************************************/
 // Solitaire game: only 1 shuffled deck needed
-// 2024: Deck is created in 'New Game' or 'Reload Game' 
+// 2024: Deck is created in 'New Game' or 'Reload Game'
 // Start of program now only loads:
-// - the html, 
-// - the callbacks for the buttons, and 
+// - the html,
+// - the callbacks for the buttons, and
 // - the handlers of all the containers
 
 /***********************************************************************/
@@ -119,7 +119,7 @@ function newGame() {  // game initialization: create stock pile and store in coo
     writeCkie("SolDeck", JSON.stringify(stockPile));
 
     // Create cards
-    // for each stack array do: 
+    // for each stack array do:
     // - 'draw' card element from stockPile array
     // - overload each card object with 'container' (parent pile)
 
@@ -127,7 +127,7 @@ function newGame() {  // game initialization: create stock pile and store in coo
     let num = 0;
 
     for(let i=1; i<8; i++){
-        
+
         // for each card in stack do:
        for( let j=0; j<i; j++){
 
@@ -145,8 +145,8 @@ function newGame() {  // game initialization: create stock pile and store in coo
         }
     }
 
-    // for all the left-over cards in the stockPile array, 
-    // create div and append it to parent container 
+    // for all the left-over cards in the stockPile array,
+    // create div and append it to parent container
     for(let i=0; i<stockPile.cards.length; i++){
 
         // set colour separately to align with rldGame()
@@ -165,7 +165,7 @@ function newGame() {  // game initialization: create stock pile and store in coo
 async function rldGame() {  // game reload; read stock pile from cookie
 // create all card divs; shuffle and distribute over stock pile and stacks
 // *****************************************************************
-    
+
     // Delete all cards and clear any history - remove any previous game
     cardDivs.forEach((el) => el.parentNode.removeChild(el));
     bayDivs.forEach((el) => el.dataset.ord = 0);
@@ -183,7 +183,7 @@ async function rldGame() {  // game reload; read stock pile from cookie
     }
 
     // Create cards
-    // for each stack array do: 
+    // for each stack array do:
     // - 'draw' card element from stockPile array
     // - overload each card object with 'container' (parent pile)
     // - add color attribute, since card comes from array, not object
@@ -191,7 +191,7 @@ async function rldGame() {  // game reload; read stock pile from cookie
     let card = {};
 
     for(let i=1; i<8; i++){
-        
+
         // for each card in stack do:
         for( let j=0; j<i; j++){
 
@@ -224,13 +224,13 @@ async function rldGame() {  // game reload; read stock pile from cookie
 
     AddCardHandlers(); // add all handlers for the card divs
 
-    // attempt to load history array of moves 
+    // attempt to load history array of moves
     Hist = JSON.parse(readCkie("SolHist"));
-    
+
     // is there any History that can be loaded?
     if( Hist != null) {
-    
-        console.log("reload game:"+ Hist.length); // DEBUG // 
+
+        console.log("reload game:"+ Hist.length); // DEBUG //
 
         // there is some history parsed
         // reenact the game by clicking through the history
@@ -265,14 +265,14 @@ async function rldGame() {  // game reload; read stock pile from cookie
                 await sleep(200);
 
             } else {
-                // standard cases: click on card            
+                // standard cases: click on card
                 document.querySelector("#" + Hist[i].fromCntr).childNodes[indx].click();
 
                 // then wait a bit, so the game history is loaded like a fast movie
                 await sleep(200);
             }
 
-            // then perform second click on the last card of the target container 
+            // then perform second click on the last card of the target container
             // or empty cntr if there are no child elements (only label)
             if( document.querySelector("#" + Hist[i].toCntr).childElementCount > 0 ) {
                 document.querySelector("#" + Hist[i].toCntr).lastChild.click()
@@ -292,9 +292,9 @@ async function rldGame() {  // game reload; read stock pile from cookie
         console.log("Hist = [], after reload"); // DEBUG //
     }
     console.log("reload successful; history length:" + Hist.length); // DEBUG //
-    
+
 } // end of: rldGame()
-    
+
 // *****************************************************************
 function AddCardHandlers() {  // add all handlers on the newly created card divs
 // this function is called in newGame() and rldGame()
@@ -302,20 +302,20 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
 
     // first resize all stack containers for better wrapping
     // stackDivs.forEach(sdiv => {
-    //     sdiv.style.height = 6.5 + (sdiv.childElementCount - 1) * 2 + 'rem'; 
+    //     sdiv.style.height = 6.5 + (sdiv.childElementCount - 1) * 2 + 'rem';
     // });
-    
+
 
     // *************************************************************
     // create a handle for all the card divs and
-    // create event listeners for cards 
+    // create event listeners for cards
     // *************************************************************
-        
+
     cardDivs = document.querySelectorAll(".card");
 
     // add drag 'n' drop event listeners to  all the card divs
     cardDivs.forEach(el => {
-        el.addEventListener('dragstart', dragStart); 
+        el.addEventListener('dragstart', dragStart);
     });
     cardDivs.forEach(el => {
         el.addEventListener('dragover', allowDrop);
@@ -323,12 +323,12 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
     cardDivs.forEach(el => {
         el.addEventListener('drop', drop);
     });
-    
+
     // *************************************************************
     // card select handler
     // *****************************************************************
-    // for each cardDiv; toggle select card on click, 
-    // if already other card selected attempt play action       
+    // for each cardDiv; toggle select card on click,
+    // if already other card selected attempt play action
     cardDivs.forEach(cel => {
         cel.addEventListener('click', () => {
         // *****************************************************************
@@ -340,7 +340,7 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
 
             // if this card is open AND this card is NOT in bay; then it is selectable
             if (!cel.classList.contains("closed") && !cel.parentNode.classList.contains("bay")) {
-                
+
                 // if this card is selected
                 if (cel.classList.contains("sel")) {
 
@@ -360,20 +360,20 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
                         // store coords of clicked card for later animation in MoveCards()
                         Coords.top = Math.round(cel.getBoundingClientRect().top);
                         Coords.left = Math.round(cel.getBoundingClientRect().left);
-                        // console.log("card ("+ Coords.left +","+ Coords.top +")");  // DEBUG // 
+                        // console.log("card ("+ Coords.left +","+ Coords.top +")");  // DEBUG //
 
                         // DEBUG // console.log("# of sel: " + document.querySelectorAll(".sel").length);
 
-                    } else if (cel.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one) 
+                    } else if (cel.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one)
 
                         // already card(s) selected, this card is target
                         // check if move is allowed: alternate suit colour and  the card value is one less
-                        if (selCards[0].dataset.colour != cel.dataset.colour && 
+                        if (selCards[0].dataset.colour != cel.dataset.colour &&
                             parseInt(selCards[0].dataset.ord) == parseInt(cel.dataset.ord) - 1) {
-                        
+
                             // this card is target, move cardDiv(s) from source to target container
                             moveCards(selCards, cel.parentNode);
-                            
+
                         } else {    // move conditions have not been satisfied
 
                             // DEBUG // console.log("this move is not allowed");
@@ -381,9 +381,9 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
                             // deselect all cards
                             selCards.forEach((el) => el.classList.remove("sel"));
                         }
-                        
+
                     } else { // try moving card to open pile
-                        
+
                         // DEBUG // console.log("you can't move cards to the open pile")
 
                         // deselect all cards
@@ -397,7 +397,7 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
 
 
     // *****************************************************************
-    // for each cardDiv; check if card can go to any bay on double click, 
+    // for each cardDiv; check if card can go to any bay on double click,
     // move card if allowed
     cardDivs.forEach(cel => {
         cel.addEventListener('dblclick', () => {
@@ -409,11 +409,11 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
             bayDivs.forEach(bel => {
 
                 // for each bay: if card suit matches and card value is one more than bay
-                if (cel.dataset.suit == bel.dataset.suit && 
+                if (cel.dataset.suit == bel.dataset.suit &&
                     parseInt(cel.dataset.ord) == parseInt(bel.dataset.ord) + 1) {
 
                     // DEBUG // console.log("Card can be moved: " + cel.innerText);
-                    
+
                     // replace bay data-value with card data-value
                     bel.dataset.ord = cel.dataset.ord;
 
@@ -439,13 +439,13 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
     }); // end of: for all cardDivs
 
 } // end of: AddCardHandlers()
-    
+
 
 // *****************************************************************
 function createCard(cont, card) {  // given element in array, create card div and append it to 'cont'
-    // this function is used by newGame() and rldGame() 
+    // this function is used by newGame() and rldGame()
     // *****************************************************************
-    
+
     let cnt = document.querySelector('#' + cont);                   // grab container div
     let cardDiv = document.createElement('div');                    // create new card div
     cardDiv.classList.add("card", card.colour, "closed");           // set card class attributes
@@ -457,18 +457,18 @@ function createCard(cont, card) {  // given element in array, create card div an
     cardDiv.setAttribute('draggable', true);                        // enable drag action on div
     cnt.appendChild(cardDiv);                                       // place card in container
 } // end of: createCard()
-    
+
 
 // *****************************************************************
-function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to trgtCont 
-// turn any card open that is left behind at the bottom of a stack 
+function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to trgtCont
+// turn any card open that is left behind at the bottom of a stack
 // *****************************************************************
 
     // determine if card left behind has to be turned
     const notSelCards = mveDivs[0].parentNode.querySelectorAll(".card:not(.sel)");
     let flip = false;
 
-    if (notSelCards && notSelCards.length > 0) { 
+    if (notSelCards && notSelCards.length > 0) {
 
         // if there are cards that will be left behind in the stack or the open pile
         // grab the last card
@@ -495,13 +495,13 @@ function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to tr
         el.classList.remove("sel");
 
         // check coords and setup transition by comparing coords with Coords from selection click
-        dx = el.getBoundingClientRect().left - Coords.left; 
+        dx = el.getBoundingClientRect().left - Coords.left;
         dy = el.getBoundingClientRect().top - Coords.top;
-        // DEBUG // console.log("card now ("+ Math.round(el.getBoundingClientRect().left) +","+ Math.round(el.getBoundingClientRect().top) +")");  // DEBUG // 
+        // DEBUG // console.log("card now ("+ Math.round(el.getBoundingClientRect().left) +","+ Math.round(el.getBoundingClientRect().top) +")");  // DEBUG //
         el.classList.add("anim");    // card will be moved on top of all other cards
 
         // move card back (instantly) to original position
-        el.style.left = -dx + "px";  
+        el.style.left = -dx + "px";
         el.style.top = -dy + "px";
 
         // perform animation over .5s
@@ -553,7 +553,7 @@ function winCond() {  // will return false when not all stacks are properly sort
     return !notYet; // not not yet, meaning: win? yes: true, no: false
 
 }  // end of: winCond()
-    
+
 
 // *****************************************************************
 function selSibsBelow(card) {  // select all lower siblings from card on
@@ -562,11 +562,11 @@ function selSibsBelow(card) {  // select all lower siblings from card on
     // retrieve all open cards in this stack/pile
     const stck = card.parentNode.querySelectorAll(".card:not(.closed)");
 
-    // DEBUG // console.log(stck); 
+    // DEBUG // console.log(stck);
 
     // cycle through all siblings, until sel card found
     // then select all further siblings
-    
+
     for(let i=0; i<stck.length; i++) {          // go through all open cards in container
         if(stck[i].classList.contains("sel")) { // find clicked card (which has sel class)
             for(let j=i; j<stck.length; j++) {  // for all further cards in container
@@ -575,16 +575,16 @@ function selSibsBelow(card) {  // select all lower siblings from card on
             break;                              // no need to check other cards (all are sel)
         }                                       // break out of for loop (and function)
     }
-    
+
 } // end of: selSibsBelow()
 
 
 // *****************************************************************
 function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
 // a Move consists of a source (fromCntr) and a destination container (toCntr)
-// Need to store as well: 
-//  - how many cards where moved at once (numCrds) 
-//  - whether the bottom card in the left-behind stack/pile needed to be flipped 
+// Need to store as well:
+//  - how many cards where moved at once (numCrds)
+//  - whether the bottom card in the left-behind stack/pile needed to be flipped
 //
 // No need to keep identification of the cardDiv, since it is always the bottom one.
 // No need to store whether card is open or closed. This can be derived from context.
@@ -617,19 +617,19 @@ async function winSequence(card) {  // Completes a bouncing sequence for a singl
     let j = 0;                                      // counter for y-axis (first increments, then decreases)
     let dy = .5;                                    // delta y (height)
     let xincr = Math.floor(Math.random() *3 )*2 + 2;// random but consistent incremental steps: 2, 4, or 6 pixels
-    let dx = xincr;                                 // delta x (left/right) 
+    let dx = xincr;                                 // delta x (left/right)
     let jmax = 1;                                   // count of bounce down
     let f = x => .5 * x * x;                        // function: f(x) = .5 x^2
     let rndm = Math.floor(Math.random() * 50) - 30; // random start on function x= -30 <=> 20
-    let vo = -f(rndm);                              // vertical offset, enter rndm into function 
+    let vo = -f(rndm);                              // vertical offset, enter rndm into function
     Dir *= -1;                                      // switch direction from previous bounce series
 
     // L = left of bay
-    // R = total width minus right of bay 
+    // R = total width minus right of bay
     // H = total height minus minus card height
     const L = card.parentNode.getBoundingClientRect().right;
     const R = window.innerWidth - card.parentNode.getBoundingClientRect().right;
-    const H = window.innerHeight - card.parentNode.getBoundingClientRect().bottom; 
+    const H = window.innerHeight - card.parentNode.getBoundingClientRect().bottom;
 
     var createAniCard = function(i, j) {  // function only used inside the Win Sequence
 
@@ -730,7 +730,7 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     }
     await sleep(500); // for the final double clicks to complete
 
-    // Some of the double click calls may not have finished, 
+    // Some of the double click calls may not have finished,
     // make sure the crds do not get deleted.
     crds.forEach(crd => { crd.style.cssText = ""; crd.classList.remove("anim") });
 
@@ -744,9 +744,9 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     let count = crds.length < 6? crds.length : 6;   // make sure there are enough cards (really only for debugging)
 
     // pick random card from collection (cannot be a repeat)
-    for (let i=0; i<count; i++) { 
-        Player.play(); 
-        await winSequence(crds[arr[i]]); 
+    for (let i=0; i<count; i++) {
+        Player.play();
+        await winSequence(crds[arr[i]]);
     }
 
     // collect all cards that are candidate for animation; only hearts and clubs
@@ -755,9 +755,9 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     count = crds.length < 6? crds.length : 6;
 
     // pick random card from collection (cannot be a repeat)
-    for (let i=0; i<count; i++) { 
-        Player.play(); 
-        await winSequence(crds[arr[i]]); 
+    for (let i=0; i<count; i++) {
+        Player.play();
+        await winSequence(crds[arr[i]]);
     }
 
     // Reset the player for usual sound
@@ -766,14 +766,14 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
     Player.load();
 
     // Turn all animated cards around their axis 360degr
-    document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn")); 
+    document.querySelectorAll(".anim").forEach((el) => el.classList.add("turn"));
 
     // re-enable all buttons again, this will happen during the "turn" animation
     document.querySelectorAll("button").forEach((el) => el.disabled = false);
 
 });  // end of: click event on winBtn
-    
-    
+
+
 // *****************************************************************
 document.querySelector('#newBtn').addEventListener("click", function() {  // New Game button click handler
 // *****************************************************************
@@ -848,7 +848,7 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
         // Special case: turn back the entire stockPile to openPile, and remove 'closed' for all cards
         if(srcCont.id == "stockPileDiv") {
 
-            // move entire stockPile into openPile (and reverse order)  
+            // move entire stockPile into openPile (and reverse order)
             for (let i=0; i<Hist[Hist.length - 1].numCrds; i++ ) {
 
                 // flip closed card of stockPile back into the openPile
@@ -870,7 +870,7 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
             if(trgtCont.id == "stockPileDiv") {
                 trgtCont.lastChild.classList.add('closed');
             }
-        
+
             // Special case: if srcCont is bay container:
             if(srcCont.id.startsWith("bay")) {
 
@@ -878,12 +878,12 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
                 srcCont.dataset.ord = parseInt(trgtCont.lastChild.dataset.ord) - 1;
 
                 // make card draggable again
-                trgtCont.lastChild.setAttribute('draggable', true);                        
+                trgtCont.lastChild.setAttribute('draggable', true);
             }
         }
 
         // Remove the move that was just undone from History
-        Hist.pop();  
+        Hist.pop();
 
         // Remove any celebratory message, if applicable
         if (!winCond()) {
@@ -895,21 +895,25 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
 
         alert("You are at the start of the game.");
     }
-      
+
 }); // end of: click event on undoBtn
 
 
 // *****************************************************************
 document.querySelector('#muteBtn').addEventListener("click", function() {  // Mute / Unmute button click handler
 // *****************************************************************
-    
+
     Player.muted = !Player.muted;
-    this.classList = (this.classList == "off")? "" : "off";
+    this.classList.contains('mute') ? (
+        this.classList.remove('mute'), this.offsetParent, this.classList.add('unmute')
+    ) : (
+        this.classList.remove('unmute'), this.offsetParent, this.classList.add('mute')
+    );
     Player.play();
 
 });  // end of: click event on muteBtn
-        
-    
+
+
 
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
@@ -951,7 +955,7 @@ function dragStart(e) {
 
 
 // *****************************************************************
-// add event handler for all drop target types: stackDivs, bayDivs, cardDivs 
+// add event handler for all drop target types: stackDivs, bayDivs, cardDivs
 stackDivs.forEach(el => {
     el.addEventListener('drop', drop);
 });
@@ -981,7 +985,7 @@ function drop(e) {
 // for Stock Pile add turn card action on click event
 stockPileDiv.addEventListener('click', () => {
 // *****************************************************************
-    
+
     // retrieve all selected cards
     const selCards = document.querySelectorAll(".sel");
     selCards.forEach((el) => el.classList.remove("sel"));
@@ -1001,9 +1005,9 @@ stockPileDiv.addEventListener('click', () => {
 
             // flip cardDiv into "closed"
             stockPileDiv.lastChild.classList.add("closed");
-            
+
         }
-        // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move  
+        // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move
         const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
         Hist.push(turn);
 
@@ -1024,7 +1028,7 @@ stockPileDiv.addEventListener('click', () => {
 
 // stack select:
 // *****************************************************************
-// for each stackDiv; allow stack (not card) as target when stack is empty       
+// for each stackDiv; allow stack (not card) as target when stack is empty
 stackDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
@@ -1045,19 +1049,19 @@ stackDivs.forEach(element => {
 
 // bay select:
 // *****************************************************************
-// for each bayDiv; allow bay (not card) as target     
+// for each bayDiv; allow bay (not card) as target
 bayDivs.forEach(element => {
     element.addEventListener('click', () => {
 // *****************************************************************
 
         // retrieve all selected cards
         const selCards = document.querySelectorAll(".sel");
-        
+
         // if only 1 cardDiv selected AND suits are same AND value is 1+ of bay
-        if (selCards && selCards.length == 1 && 
-            selCards[0].dataset.suit == element.dataset.suit && 
+        if (selCards && selCards.length == 1 &&
+            selCards[0].dataset.suit == element.dataset.suit &&
             parseInt(selCards[0].dataset.ord) == parseInt(element.dataset.ord) + 1) {
-                
+
             // replace bay data-value with card data-value
             element.dataset.ord = selCards[0].dataset.ord;
 

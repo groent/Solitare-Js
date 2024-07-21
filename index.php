@@ -5,7 +5,7 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
     $min_url = ".min";
 } else {
     $min_url = "";
-} 
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +20,7 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
 </head>
 
 <body>
-    
+
     <h1 class="linear-wipe">Congratulations! <br />You won.</h1>
     <button id="winBtn" accesskey="c">Celebrate!</button>
 
@@ -29,7 +29,7 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
     <button id="sveBtn" accesskey="s">Save Game</button>
     <button id="undoBtn" accesskey="z">Undo last move</button>
     <button id="genBtn" accesskey="g">Generate ID</button>
-    <button id="muteBtn" accesskey="m">♪</button>
+    <button id="muteBtn" accesskey="m" class="unmute"><?php include('./assets/un-mute.min.svg'); ?></button>
 
     <div>
         <div class ="container" id="stockPileDiv"></div>

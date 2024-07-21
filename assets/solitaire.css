@@ -9,7 +9,7 @@ body {
 
 h1 {
     font-family: 'Comic Sans', 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
-    font-size: 10vw; 
+    font-size: 10vw;
     display: none;
 }
 
@@ -29,14 +29,14 @@ h1 {
     -webkit-animation: shiny 1.5s linear infinite;
 }
 @keyframes shiny {
-    0% { 
-        background-position: 0px 50%; 
+    0% {
+        background-position: 0px 50%;
     }
-    /* 50% { 
-        background-position: 100% 50%; 
+    /* 50% {
+        background-position: 100% 50%;
     } */
-    100% { 
-        background-position: 200% 50%; 
+    100% {
+        background-position: 200% 50%;
     }
 }
 
@@ -55,11 +55,42 @@ button {
     margin: 0 auto 1rem;
 }
 
-#muteBtn.off::before {
-    position: absolute;
-    content: "⁄"; /* division mark in font table (char map)*/
-    transform: scale(-1, 1);
-    text-align: center;
+#muteBtn svg {
+    vertical-align: text-top;
+}
+#muteBtn.unmute #sound {
+    /* fill-opacity: 1 !important; */
+    transform: scale(1, 1);
+    animation: grow .3s ease-in
+}
+
+#muteBtn.mute #sound {
+    /* fill-opacity: 0 !important; */
+    transform: scale(0, 0);
+    /* animation: grow .3s ease-in reverse */
+    animation: shrink .2s ease-in
+}
+@keyframes grow {
+    0% {
+        transform: scale(0, 0);
+    }
+    35% {
+        transform: scale(.8, .8);
+    }
+    70% {
+        transform: scale(.5, .5);
+    }
+    100% {
+        transform: scale(1, 1);
+    }
+}
+@keyframes shrink {
+    0% {
+        transform: scale(1, 1);
+    }
+    100% {
+        transform: scale(0, 0);
+    }
 }
 
 /* Card suits */
@@ -146,8 +177,8 @@ outline: 2px solid rgb(2, 214, 133);
 @keyframes rotate360 {
     to { transform: rotate(360deg); }
   }
-.turn { 
-    animation: 3s rotate360 1  ease-out; 
+.turn {
+    animation: 3s rotate360 1  ease-out;
 }
 
 /* .card.test {
@@ -156,7 +187,7 @@ outline: 2px solid rgb(2, 214, 133);
 
 .card.closed {
     /* background: repeating-linear-gradient( -45deg,#fff, #A33 1px,#fff 2px); */
-    background-image: 
+    background-image:
     linear-gradient(45deg, transparent 40%, #a33 50%, transparent 60%, transparent 100%),
     linear-gradient(-45deg, transparent 40%, #a33 50%, transparent 60%, transparent 100%);
     background-size: 6px 6px;
