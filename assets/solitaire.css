@@ -137,6 +137,13 @@ body > div {
     height: 30.5rem;
 }
 
+#openPileDiv.klondike .card:nth-last-child(2) {
+    margin-left: 3rem;
+}
+#openPileDiv.klondike .card:nth-last-child(1) {
+    margin-left: 6rem;
+}
+
 
 /* ************************************************************** */
 /*   CARD DIV CLASSES, DETERMINE BEHAVIOUR AS WELL                */

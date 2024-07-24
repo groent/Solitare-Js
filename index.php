@@ -30,6 +30,7 @@ if ($_SERVER['SERVER_PORT'] == "443" || $_SERVER['SERVER_PORT'] == "80") // defa
     <button id="undoBtn" accesskey="z">Undo last move</button>
     <button id="genBtn" accesskey="g">Generate ID</button>
     <button id="muteBtn" accesskey="m" class="unmute"><?php include('./assets/un-mute.min.svg'); ?></button>
+    <button id="klonBtn" accesskey="k">Classic</button>
 
     <div>
         <div class ="container" id="stockPileDiv"></div>

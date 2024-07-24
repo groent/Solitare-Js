@@ -60,15 +60,12 @@ var Hist = [];
 // All created card divs in newGame(), with their event handlers
 var cardDivs = [];
 
-// Canvas coords for (previously) selected cardDivs in onclick(), used for animation in MoveCards()
-var Coords = {};
-Coords.top = 0, Coords.left = 0;
-
 // Sound player
 const Player  = document.createElement('audio');
 Player.src = './assets/flip.mp3';
 Player.load();
 
+var Klondike = false;
 
 /***********************************************************************/
 /*                         START OF PROGRAM                            */
@@ -158,6 +155,8 @@ function newGame() {  // game initialization: create stock pile and store in coo
 
     AddCardHandlers();
 
+    SetDraggable();
+
 } // end of: newGame()
 
 
@@ -186,7 +185,6 @@ async function rldGame() {  // game reload; read stock pile from cookie
     // for each stack array do:
     // - 'draw' card element from stockPile array
     // - overload each card object with 'container' (parent pile)
-    // - add color attribute, since card comes from array, not object
 
     let card = {};
 
@@ -281,6 +279,9 @@ async function rldGame() {  // game reload; read stock pile from cookie
             }
 
         }  // end of: for all moves
+
+        SetDraggable();
+
     }  // end of: History is not null
 
     // restore history to before the reload, since clicks have been added...
@@ -338,8 +339,10 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
             // retrieve all selected cards
             const selCards = document.querySelectorAll(".sel");
 
-            // if this card is open AND this card is NOT in bay; then it is selectable
-            if (!cel.classList.contains("closed") && !cel.parentNode.classList.contains("bay")) {
+            // if this card is open AND this card is in stack OR
+            // it is last child of open pile; then it is selectable
+            if ( (!cel.classList.contains("closed") && cel.parentNode.classList.contains("stack")) ||
+                (cel.parentNode.id == "openPileDiv" && !cel.nextElementSibling) ) {
 
                 // if this card is selected
                 if (cel.classList.contains("sel")) {
@@ -357,22 +360,18 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
                         // select any siblings below this card
                         selSibsBelow(cel);
 
-                        // store coords of clicked card for later animation in MoveCards()
-                        Coords.top = Math.round(cel.getBoundingClientRect().top);
-                        Coords.left = Math.round(cel.getBoundingClientRect().left);
-                        // console.log("card ("+ Coords.left +","+ Coords.top +")");  // DEBUG //
-
-                        // DEBUG // console.log("# of sel: " + document.querySelectorAll(".sel").length);
-
-                    } else if (cel.parentNode.id != "openPileDiv") { // make sure that clicked card is not in openPile (only select one)
+                    } else if (cel.parentNode.id != "openPileDiv") {
+                        // make sure that clicked card is not in openPile (only select one)
 
                         // already card(s) selected, this card is target
-                        // check if move is allowed: alternate suit colour and  the card value is one less
-                        if (selCards[0].dataset.colour != cel.dataset.colour &&
-                            parseInt(selCards[0].dataset.ord) == parseInt(cel.dataset.ord) - 1) {
+                        // check if move is allowed: alternate suit colour and the card value is one less from last child
+                        if (selCards[0].dataset.colour != cel.parentNode.lastElementChild.dataset.colour &&
+                            parseInt(selCards[0].dataset.ord) == parseInt(cel.parentNode.lastElementChild.dataset.ord) - 1) {
 
                             // this card is target, move cardDiv(s) from source to target container
                             moveCards(selCards, cel.parentNode);
+
+                            SetDraggable();
 
                         } else {    // move conditions have not been satisfied
 
@@ -429,7 +428,8 @@ function AddCardHandlers() {  // add all handlers on the newly created card divs
                     moveCards(cards, bel);
 
                     // make card undraggable
-                    bel.lastChild.setAttribute('draggable', false);
+                    SetDraggable();
+                    // bel.lastChild.setAttribute('draggable', false);
 
                 } // end if card belongs on bay
 
@@ -453,8 +453,8 @@ function createCard(cont, card) {  // given element in array, create card div an
     cardDiv.dataset.value = `${card.suit}${card.value}`;            // set value in data-value
     cardDiv.dataset.suit = card.suit;                               // set suit in data-suit
     cardDiv.dataset.colour = card.colour;                           // set suit colour in data-colour
-    cardDiv.dataset.ord = CARD_VALUE_MAP[card.value];               // set ordinal in daata-ord
-    cardDiv.setAttribute('draggable', true);                        // enable drag action on div
+    cardDiv.dataset.ord = CARD_VALUE_MAP[card.value];               // set ordinal in data-ord
+    // cardDiv.setAttribute('draggable', false);                       // enable drag action on div
     cnt.appendChild(cardDiv);                                       // place card in container
 } // end of: createCard()
 
@@ -489,15 +489,27 @@ function moveCards(mveDivs, trgtCont) { // move array of selected cardDivs to tr
 
     let dx = 0, dy = 0;
 
+    // record the original coords of the first card to be moved,
+    // all other cards that will move at the same time will start from the same position
+    // since the cards will move up by one after each move
+    let coords = {};
+    coords.left = mveDivs[0].getBoundingClientRect().left;
+    coords.top = mveDivs[0].getBoundingClientRect().top;
+
     // forEach mveDivs move and deselect card
     mveDivs.forEach((el) => {
+
+        // actual move to new container (always at the bottom)
         trgtCont.appendChild(el);
+
+        // take off the selection emphasis
         el.classList.remove("sel");
 
-        // check coords and setup transition by comparing coords with Coords from selection click
-        dx = el.getBoundingClientRect().left - Coords.left;
-        dy = el.getBoundingClientRect().top - Coords.top;
-        // DEBUG // console.log("card now ("+ Math.round(el.getBoundingClientRect().left) +","+ Math.round(el.getBoundingClientRect().top) +")");  // DEBUG //
+        // determine delta of the coords of the card by subtracting the coords
+        // from before the move with those after
+        dx = el.getBoundingClientRect().left - coords.left;
+        dy = el.getBoundingClientRect().top - coords.top;
+
         el.classList.add("anim");    // card will be moved on top of all other cards
 
         // move card back (instantly) to original position
@@ -541,7 +553,7 @@ function winCond() {  // will return false when not all stacks are properly sort
             // check if the entire stack is sorted
             selSibsBelow(div.querySelectorAll(".card")[0]);
 
-            // check if there's any .nope cards; means no win
+            // check if there's any .closed cards; means no win
             notYet += document.querySelectorAll(".closed").length;
 
             // remove any selection in this stack
@@ -549,6 +561,9 @@ function winCond() {  // will return false when not all stacks are properly sort
 
         }  // end of: if any children
     });  // end of: for each stack
+
+    // check if openPileDiv has any cards
+    notYet += document.querySelector('#openPileDiv').hasChildNodes();
 
     return !notYet; // not not yet, meaning: win? yes: true, no: false
 
@@ -596,6 +611,17 @@ function Move(cardDivs, trgtCntrId, Flipped) {  // Constructor for Move object
     this.flip = Flipped;
 
 }  // end of: Move()
+
+
+function SetDraggable() {
+    // Reset all card divs correctly for being draggable
+    // (this is a simplification of previous solution where each change is handled according needs)
+
+    document.querySelectorAll('.card').forEach(el => el.setAttribute('draggable', false));
+    document.querySelectorAll('.stack .card:not(.closed)').forEach(el => el.setAttribute('draggable', true));
+    if (document.querySelector('#openPileDiv').hasChildNodes()) document.querySelector('#openPileDiv').lastElementChild.setAttribute('draggable', true);
+
+} // end of: SetDraggable()
 
 
 // *****************************************************************
@@ -770,6 +796,7 @@ document.querySelector('#winBtn').addEventListener("click", async function() {  
 
     // re-enable all buttons again, this will happen during the "turn" animation
     document.querySelectorAll("button").forEach((el) => el.disabled = false);
+    // document.querySelector('#undoBtn').disabled = Klondike;
 
 });  // end of: click event on winBtn
 
@@ -800,6 +827,7 @@ document.querySelector('#rldBtn').addEventListener("click", async function() {  
 
     // re-enable all buttons again
     document.querySelectorAll("button").forEach((el) => el.disabled = false);
+    // document.querySelector('#undoBtn').disabled = Klondike;
 
 }); // end of: click event on rldBtn
 
@@ -858,7 +886,20 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
                 trgtCont.lastChild.classList.remove("closed");
             }
 
-        } else {  // moved cardDiv(s) do not come from stockPile
+        // Special case potentially: Klondike set needs to be reversed
+        } else if(srcCont.id == "openPileDiv") {
+
+            // move NumCrds back into stockPile (and reverse order)
+            for (let i=0; i<Hist[Hist.length - 1].numCrds; i++ ) {
+
+                // flip closed card of stockPile back into the openPile
+                trgtCont.appendChild(srcCont.lastChild);
+
+                // turn cardDiv into "closed"
+                trgtCont.lastChild.classList.add("closed");
+            }
+
+        } else {  // moved cardDiv(s) do not come from stockPile or openPile
 
             // move card(s) back to fromCntr (stack/openPile)
             for (let i=0; i < Hist[Hist.length - 1].numCrds; i++) {
@@ -878,12 +919,15 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
                 srcCont.dataset.ord = parseInt(trgtCont.lastChild.dataset.ord) - 1;
 
                 // make card draggable again
-                trgtCont.lastChild.setAttribute('draggable', true);
+                // trgtCont.lastChild.setAttribute('draggable', true);
             }
         }
 
         // Remove the move that was just undone from History
         Hist.pop();
+
+        // reset the draggable cards
+        SetDraggable();
 
         // Remove any celebratory message, if applicable
         if (!winCond()) {
@@ -902,16 +946,28 @@ document.querySelector('#undoBtn').addEventListener("click", function() {  // Un
 // *****************************************************************
 document.querySelector('#muteBtn').addEventListener("click", function() {  // Mute / Unmute button click handler
 // *****************************************************************
-
-    Player.muted = !Player.muted;
-    this.classList.contains('mute') ? (
-        this.classList.remove('mute'), this.offsetParent, this.classList.add('unmute')
-    ) : (
-        this.classList.remove('unmute'), this.offsetParent, this.classList.add('mute')
-    );
-    Player.play();
+Player.muted = !Player.muted;
+this.classList.contains('mute') ? (
+    this.classList.remove('mute'), this.offsetParent, this.classList.add('unmute')
+) : (
+    this.classList.remove('unmute'), this.offsetParent, this.classList.add('mute')
+);
+Player.play();
 
 });  // end of: click event on muteBtn
+
+
+// *****************************************************************
+document.querySelector('#klonBtn').addEventListener("click", function() {  // Mute / Unmute button click handler
+// *****************************************************************
+
+    const klon = document.querySelector("#openPileDiv");
+    Klondike = !Klondike;
+    // document.querySelector('#undoBtn').disabled = Klondike;
+    this.textContent = (this.textContent == "Klondike")? "Classic" : "Klondike";
+    klon.classList.contains('klondike') ?  klon.classList.remove('klondike')  : klon.classList.add('klondike');
+
+});  // end of: click event on klonBtn
 
 
 
@@ -990,40 +1046,65 @@ stockPileDiv.addEventListener('click', () => {
     const selCards = document.querySelectorAll(".sel");
     selCards.forEach((el) => el.classList.remove("sel"));
 
-    // If no card left turn the open pile back to stock pile:
-    // reverse order and update attributes
-    if (stockPileDiv.childNodes.length == 0) {
+    // Classic mode draw 1 card; Klondike draw 3 as long as there are cards left
+    const draw = (Klondike)? 3 : 1;
+    let drawn = 0;
 
-        // determine the number of cards that need to be turned over
-        const numOfCards = openPileDiv.childNodes.length
+    for (let i=0; i<draw; i++) {
 
-        // move openPile into stockPile
-        for (let i=0; i<numOfCards; i++ ) {
+        // If no card left turn the open pile back to stock pile:
+        // reverse order and update attributes
+        if (stockPileDiv.childNodes.length == 0 && i==0) {
 
-            // flip shown card of openPile back into the stockPile
-            stockPileDiv.appendChild(openPileDiv.lastChild);
+            // determine the number of cards that need to be turned over
+            const numOfCards = openPileDiv.childNodes.length
 
-            // flip cardDiv into "closed"
-            stockPileDiv.lastChild.classList.add("closed");
+            // move openPile into stockPile
+            for (let j=0; j<numOfCards; j++ ) {
 
-        }
-        // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move
-        const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
-        Hist.push(turn);
+                // flip shown card of openPile back into the stockPile
+                stockPileDiv.appendChild(openPileDiv.lastChild);
 
-    } else { // stockPile has children: just draw one card
+                // flip cardDiv into "closed"
+                stockPileDiv.lastChild.classList.add("closed");
 
-        // take last element of stockPileDiv and move to openPileDiv
-        openPileDiv.appendChild(stockPileDiv.lastChild);
+            }
+            // Store in Hist: the flip back of all openPile cardDivs into stockPile as a single move
+            const turn = {fromCntr: "openPileDiv", numCrds: numOfCards, toCntr: "stockPileDiv", flip: false};
+            Hist.push(turn);
 
-        // update attributes of cardDiv
-        openPileDiv.lastChild.classList.remove("closed");
+            // bail out no matter what, since the pile has been turned over
+            return;
 
-        // Store in Hist: draw a cardDiv from stockPile to openPile and turn card
-        const turn = {fromCntr: "stockPileDiv", numCrds: 1, toCntr: "openPileDiv", flip: false};
-        Hist.push(turn);
-    }
-});
+        } else { // stockPile has children: just draw one card
+
+            if (stockPileDiv.childNodes.length != 0) {
+                // could be 0 if more than one card drawn at same time
+
+                // take last element of stockPileDiv and move to openPileDiv
+                openPileDiv.appendChild(stockPileDiv.lastChild);
+
+                // update attributes of cardDiv
+                openPileDiv.lastChild.classList.remove("closed");
+                drawn++;
+
+            }  // end of: as long as stockPile is not empty
+
+        }  // end of: stockPile has at least one child
+
+    }  // end of: draw 1 or 3 cards (or less)
+
+    // All draws have completed from stockPileDiv, so
+    // now we need to record how many cards actually were drawn
+
+    // Store in Hist: drawn # cardDivs from stockPile to openPile and turn card
+    const turn = {fromCntr: "stockPileDiv", numCrds: drawn, toCntr: "openPileDiv", flip: false};
+    Hist.push(turn);
+
+    // reset the draggable cards
+    SetDraggable();
+
+}); // end of: stockPile.click
 
 
 // stack select:
@@ -1041,6 +1122,9 @@ stackDivs.forEach(element => {
 
             // move King to empty stack
             moveCards(selCards, element);
+
+            // reset the draggable cards
+            SetDraggable();
         }
 
     }); // end of: onclick for stackDiv
@@ -1067,6 +1151,9 @@ bayDivs.forEach(element => {
 
             // append selected card to bay
             moveCards(selCards, element);
+
+            // reset the draggable cards
+            SetDraggable();
 
         } else { // move is not allowed
 
