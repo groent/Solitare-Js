@@ -189,7 +189,7 @@ outline: 2px solid rgb(2, 214, 133);
 }
 
 /* .card.test {
-    outline: 2addpx solid rgb(255, 0, 191);
+    outline: 2px solid rgb(255, 0, 191);
 } */
 
 .card.closed {
@@ -202,6 +202,19 @@ outline: 2px solid rgb(2, 214, 133);
     box-shadow: inset 0 0 0 4px white;
     color: transparent;
 }
+.card.closed.hover {
+    background-image: none;
+    background-color: #ffd3cc;
+    color: inherit;
+}
+.card.closed.hover[data-colour="black"] {
+    color: rgba(0,0,0,.4);
+}
+.card.closed.hover[data-colour="red"] {
+    color: rgba(255,0,0,.4);
+}
+
+
 .stack .card:nth-child(2) {
     margin-top: 2rem;
 }

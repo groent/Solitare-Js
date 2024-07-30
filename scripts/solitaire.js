@@ -970,6 +970,17 @@ document.querySelector('#klonBtn').addEventListener("click", function() {  // Mu
 });  // end of: click event on klonBtn
 
 
+// *****************************************************************
+document.querySelector('#cheatBtn').addEventListener("mouseover", function() {  // Show / Hide button click handler
+// *****************************************************************
+
+    document.querySelectorAll(".card").forEach(el => {
+        el.classList.contains('hover') ?  el.classList.remove('hover')  : el.classList.add('hover');
+    });
+
+});  // end of: click event on cheatBtn
+
+
 
 /***********************************************************************/
 /*                          DRAG 'N' DROP                              */
